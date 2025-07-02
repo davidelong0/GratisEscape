@@ -1,3 +1,4 @@
+// AuthController.java
 package com.example.gratisescape.controllers;
 
 import com.example.gratisescape.dto.UserLoginDTO;
@@ -19,8 +20,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterDTO userDTO) {
-        return authService.registerUser(userDTO);
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterDTO userDTO,
+                                      @RequestHeader("Origin") String origin) {
+        return authService.registerUser(userDTO, origin);
+    }
+
+    @PostMapping("/confirm")
+    public ResponseEntity<?> confirmEmail(@RequestParam String token) {
+        return authService.confirmEmail(token);
     }
 
     @PostMapping("/login")
@@ -33,7 +40,15 @@ public class AuthController {
         String authenticatedEmail = authentication.getName();
         return authService.changePassword(authenticatedEmail, dto.oldPassword(), dto.newPassword());
     }
+
+    @PostMapping("/change-password-first")
+    public ResponseEntity<?> changePasswordFirst(@RequestBody ChangePasswordDTO dto) {
+        return authService.changePasswordFirst(dto);
+    }
 }
+
+
+
 
 
 

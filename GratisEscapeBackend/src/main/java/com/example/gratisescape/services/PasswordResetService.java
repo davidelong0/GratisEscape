@@ -28,7 +28,6 @@ public class PasswordResetService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     public void sendResetEmail(String email, String appUrl) throws MessagingException {
         Optional<User> userOpt = userRepo.findByEmail(email);
         if (userOpt.isEmpty()) return;
@@ -51,7 +50,6 @@ public class PasswordResetService {
         mailSender.send(message);
     }
 
-
     public boolean resetPassword(String token, String newPassword) {
         String email = jwtService.extractUsername(token);
 
@@ -68,6 +66,7 @@ public class PasswordResetService {
         return true;
     }
 }
+
 
 
 

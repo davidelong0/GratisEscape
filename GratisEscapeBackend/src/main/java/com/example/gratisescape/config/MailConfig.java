@@ -1,5 +1,6 @@
 package com.example.gratisescape.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,16 +11,21 @@ import java.util.Properties;
 @Configuration
 public class MailConfig {
 
+    @Value("${gmail.mail.from}")
+    private String username;
+
+    @Value("${gmail.mail.from.password}")
+    private String password;
+
     @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        mailSender.setUsername(System.getenv("GMAIL_FROM"));
-        mailSender.setPassword(System.getenv("GMAIL_PASSWORD"));
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
@@ -31,4 +37,5 @@ public class MailConfig {
         return mailSender;
     }
 }
+
 

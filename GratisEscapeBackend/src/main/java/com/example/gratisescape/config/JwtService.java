@@ -1,6 +1,7 @@
 package com.example.gratisescape.config;
 
 import com.example.gratisescape.models.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -27,7 +28,6 @@ public class JwtService {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -38,27 +38,15 @@ public class JwtService {
                 .compact();
     }
 
-
-    public String extractUsername(String token) {
-        return extractClaim(token, claims -> claims.getSubject());
+    public String generateEmailConfirmationToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("type", "email_confirmation")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 86_400_000)) // 24 ore
+                .signWith(signingKey)
+                .compact();
     }
-
-
-    public boolean isTokenValid(String token, User user) {
-        final String username = extractUsername(token);
-        return username.equals(user.getEmail()) && !isTokenExpired(token);
-    }
-
-
-    public <T> T extractClaim(String token, Function<io.jsonwebtoken.Claims, T> claimsResolver) {
-        final var claims = Jwts.parser()
-                .verifyWith(signingKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return claimsResolver.apply(claims);
-    }
-
 
     public String generatePasswordResetToken(User user) {
         return Jwts.builder()
@@ -70,6 +58,14 @@ public class JwtService {
                 .compact();
     }
 
+    public boolean isEmailConfirmationToken(String token) {
+        try {
+            String type = extractClaim(token, claims -> claims.get("type", String.class));
+            return "email_confirmation".equals(type);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public boolean isPasswordResetToken(String token) {
         try {
@@ -80,11 +76,30 @@ public class JwtService {
         }
     }
 
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public boolean isTokenValid(String token, User user) {
+        final String username = extractUsername(token);
+        return username.equals(user.getEmail()) && !isTokenExpired(token);
+    }
 
     private boolean isTokenExpired(String token) {
-        return extractClaim(token, claims -> claims.getExpiration()).before(new Date());
+        return extractClaim(token, Claims::getExpiration).before(new Date());
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = Jwts.parser()
+                .setSigningKey(signingKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claimsResolver.apply(claims);
     }
 }
+
+
+
 
 
 

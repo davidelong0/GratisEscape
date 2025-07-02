@@ -1,3 +1,4 @@
+// DataInitializer.java
 package com.example.gratisescape.config;
 
 import com.example.gratisescape.models.Ruolo;
@@ -28,11 +29,14 @@ public class DataInitializer implements CommandLineRunner {
                     .cognome("Default")
                     .ruolo(Ruolo.ADMIN)
                     .passwordChanged(false)
+                    .isEnabled(true)
                     .build();
             userRepo.save(admin);
             System.out.println("Admin di default creato: admin@gratisescape.com / Admin123!");
         }
     }
 }
+
+
 
 

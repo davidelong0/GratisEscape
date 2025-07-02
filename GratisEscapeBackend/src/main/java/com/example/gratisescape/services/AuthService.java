@@ -3,10 +3,11 @@ package com.example.gratisescape.services;
 import com.example.gratisescape.config.JwtService;
 import com.example.gratisescape.dto.UserLoginDTO;
 import com.example.gratisescape.dto.UserRegisterDTO;
+import com.example.gratisescape.dto.ChangePasswordDTO;
 import com.example.gratisescape.models.Ruolo;
 import com.example.gratisescape.models.User;
 import com.example.gratisescape.repositories.UserRepository;
-import com.example.gratisescape.dto.ChangePasswordDTO;
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,15 +23,17 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
+    private final EmailSenderService emailSender;
 
-    public AuthService(UserRepository userRepo, PasswordEncoder encoder, JwtService jwtService, AuthenticationManager authManager) {
+    public AuthService(UserRepository userRepo, PasswordEncoder encoder, JwtService jwtService, AuthenticationManager authManager, EmailSenderService emailSender) {
         this.userRepo = userRepo;
         this.encoder = encoder;
         this.jwtService = jwtService;
         this.authManager = authManager;
+        this.emailSender = emailSender;
     }
 
-    public ResponseEntity<?> registerUser(UserRegisterDTO dto) {
+    public ResponseEntity<?> registerUser(UserRegisterDTO dto, String appUrl) {
         if (userRepo.findByEmail(dto.email()).isPresent()) {
             return ResponseEntity.badRequest().body("Email già in uso.");
         }
@@ -41,12 +44,43 @@ public class AuthService {
                 .nome(dto.nome())
                 .cognome(dto.cognome())
                 .ruolo(Ruolo.UTENTE)
-                .passwordChanged(true) // utenti normali registrati hanno subito password valida
+                .passwordChanged(true)
+                .isEnabled(false)  // disabilitato fino a conferma email
                 .build();
 
         userRepo.save(user);
-        String token = jwtService.generateToken(user);
-        return ResponseEntity.ok(token);
+
+        String token = jwtService.generateEmailConfirmationToken(user);
+        try {
+            emailSender.sendConfirmationEmail(user.getEmail(), appUrl, token);
+        } catch (MessagingException e) {
+            return ResponseEntity.status(500).body("Errore invio email conferma.");
+        }
+
+        return ResponseEntity.ok("Registrazione effettuata. Controlla la tua email per confermare l'account.");
+    }
+
+    public ResponseEntity<?> confirmEmail(String token) {
+        if (!jwtService.isEmailConfirmationToken(token)) {
+            return ResponseEntity.badRequest().body("Token di conferma email non valido");
+        }
+
+        String email = jwtService.extractUsername(token);
+        User user = userRepo.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Utente non trovato");
+        }
+        if (user.isEnabled()) {
+            return ResponseEntity.badRequest().body("Account già abilitato");
+        }
+
+        if (!jwtService.isTokenValid(token, user)) {
+            return ResponseEntity.badRequest().body("Token scaduto o non valido");
+        }
+
+        user.setEnabled(true);
+        userRepo.save(user);
+        return ResponseEntity.ok("Email confermata con successo. Puoi ora effettuare il login.");
     }
 
     public ResponseEntity<?> loginUser(UserLoginDTO dto) {
@@ -60,7 +94,10 @@ public class AuthService {
             User user = userRepo.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Utente non trovato dopo autenticazione"));
 
-            // Controllo: se admin e non ha cambiato password, blocco login
+            if (!user.isEnabled()) {
+                return ResponseEntity.status(403).body("Account non abilitato. Controlla la tua email.");
+            }
+
             if (user.getRuolo() == Ruolo.ADMIN && !user.isPasswordChanged()) {
                 return ResponseEntity.status(403).body("Devi cambiare la password al primo accesso.");
             }
@@ -72,6 +109,7 @@ public class AuthService {
         }
     }
 
+    // Cambio password normale
     public ResponseEntity<?> changePassword(String email, String oldPassword, String newPassword) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
@@ -86,7 +124,28 @@ public class AuthService {
 
         return ResponseEntity.ok("Password cambiata con successo");
     }
+
+    // Cambio password primo accesso admin
+    public ResponseEntity<?> changePasswordFirst(ChangePasswordDTO dto) {
+        User admin = userRepo.findByEmail("admin@gratisescape.com")
+                .orElseThrow(() -> new RuntimeException("Admin non trovato"));
+
+        if (admin.isPasswordChanged()) {
+            return ResponseEntity.badRequest().body("Password già cambiata, usa il cambio password protetto");
+        }
+
+        if (!encoder.matches(dto.oldPassword(), admin.getPassword())) {
+            return ResponseEntity.badRequest().body("Vecchia password errata");
+        }
+
+        admin.setPassword(encoder.encode(dto.newPassword()));
+        admin.setPasswordChanged(true);
+        userRepo.save(admin);
+
+        return ResponseEntity.ok("Password admin cambiata con successo");
+    }
 }
+
 
 
 

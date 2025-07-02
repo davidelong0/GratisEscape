@@ -43,6 +43,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .password(passwordEncoder.encode("oauth2user-" + System.currentTimeMillis()))
                     .ruolo(Ruolo.UTENTE)
                     .passwordChanged(true)
+                    .isEnabled(true)
                     .build();
             userRepo.save(user);
         }
@@ -50,6 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return oauth2User;
     }
 }
+
 
 
 

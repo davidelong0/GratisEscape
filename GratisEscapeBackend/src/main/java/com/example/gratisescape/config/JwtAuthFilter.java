@@ -44,7 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String email = jwtService.extractUsername(jwt);
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var userEntity = userRepo.findByEmail(email).orElse(null);
+            User userEntity = userRepo.findByEmail(email).orElse(null);
             if (userEntity != null && jwtService.isTokenValid(jwt, userEntity)) {
                 var userDetails = new org.springframework.security.core.userdetails.User(
                         userEntity.getEmail(),
@@ -66,6 +66,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+
 
 
 

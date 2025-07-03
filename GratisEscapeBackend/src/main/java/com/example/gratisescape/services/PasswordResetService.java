@@ -37,6 +37,10 @@ public class PasswordResetService {
         String token = jwtService.generatePasswordResetToken(user);
         String resetUrl = appUrl + "/reset-password?token=" + token;
 
+        // ✅ Stampa utile in fase di sviluppo per recuperare il token
+        System.out.println("🔑 Token reset password: " + token);
+        System.out.println("📩 Link reset password: " + resetUrl);
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(user.getEmail());
@@ -66,6 +70,7 @@ public class PasswordResetService {
         return true;
     }
 }
+
 
 
 

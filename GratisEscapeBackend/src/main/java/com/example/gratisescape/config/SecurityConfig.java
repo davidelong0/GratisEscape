@@ -1,7 +1,7 @@
 package com.example.gratisescape.config;
 
-import com.example.gratisescape.services.CustomUserDetailsService;
 import com.example.gratisescape.services.CustomOAuth2UserService;
+import com.example.gratisescape.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,12 +37,37 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/public/**").permitAll()
+
+                        .requestMatchers(
+                                "/auth/register",
+                                "/auth/login",
+                                "/auth/confirm",
+                                "/auth/confirm/**",
+                                "/auth/change-password-first",
+                                "/auth/forgot-password",
+                                "/auth/reset-password",
+                                "/public/**"
+                        ).permitAll()
+
+
                         .requestMatchers(HttpMethod.GET, "/viaggi/**").permitAll()
+
+
                         .requestMatchers(HttpMethod.POST, "/viaggi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/viaggi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/viaggi/**").hasRole("ADMIN")
-                        .requestMatchers("/richieste/**").hasRole("ADMIN")
+
+
+                        .requestMatchers(HttpMethod.POST, "/richieste").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/richieste").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/richieste/**/rispondi").hasRole("ADMIN")
+
+
+                        .requestMatchers(HttpMethod.POST, "/chat/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/chat/**").permitAll()
+                        .requestMatchers("/ws-chat/**").permitAll()
+
+
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
@@ -64,6 +89,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
+
 
 
 

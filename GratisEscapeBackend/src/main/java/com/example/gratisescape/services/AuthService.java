@@ -45,7 +45,7 @@ public class AuthService {
                 .cognome(dto.cognome())
                 .ruolo(Ruolo.UTENTE)
                 .passwordChanged(true)
-                .isEnabled(false)  // disabilitato fino a conferma email
+                .isEnabled(false)
                 .build();
 
         userRepo.save(user);

@@ -1,5 +1,6 @@
 package com.example.gratisescape.controllers;
 
+import com.example.gratisescape.dto.RispostaDTO;
 import com.example.gratisescape.models.Richiesta;
 import com.example.gratisescape.services.RichiestaService;
 import org.springframework.http.ResponseEntity;
@@ -27,17 +28,19 @@ public class RichiestaController {
         return ResponseEntity.ok(richiestaService.getTutte());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Richiesta> getById(@PathVariable Long id) {
+        Richiesta richiesta = richiestaService.getById(id);
+        return ResponseEntity.ok(richiesta);
+    }
+
     @PostMapping("/{id}/rispondi")
-    public ResponseEntity<?> rispondi(@PathVariable Long id, @RequestBody String risposta) {
-        var richiestaOpt = richiestaService.getTutte().stream()
-                .filter(r -> r.getId().equals(id))
-                .findFirst();
-
-        if (richiestaOpt.isEmpty()) return ResponseEntity.notFound().build();
-
-        richiestaService.inviaRisposta(richiestaOpt.get(), risposta);
+    public ResponseEntity<?> rispondi(@PathVariable Long id, @RequestBody RispostaDTO rispostaDTO) {
+        Richiesta richiesta = richiestaService.getById(id);
+        richiestaService.inviaRisposta(richiesta, rispostaDTO.risposta());
         return ResponseEntity.ok("Risposta inviata");
     }
 }
+
 
 

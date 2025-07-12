@@ -21,15 +21,18 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint unauthorizedHandler;
     private final CustomUserDetailsService userDetailsService;
     private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter,
                           CustomAuthenticationEntryPoint unauthorizedHandler,
                           CustomUserDetailsService userDetailsService,
-                          CustomOAuth2UserService oAuth2UserService) {
+                          CustomOAuth2UserService oAuth2UserService,
+                          OAuth2SuccessHandler oAuth2SuccessHandler) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.unauthorizedHandler = unauthorizedHandler;
         this.userDetailsService = userDetailsService;
         this.oAuth2UserService = oAuth2UserService;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
 
     @Bean
@@ -37,7 +40,6 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(
                                 "/auth/register",
                                 "/auth/login",
@@ -46,33 +48,30 @@ public class SecurityConfig {
                                 "/auth/change-password-first",
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
-                                "/public/**"
+                                "/public/**",
+                                "/oauth2/**",
+                                "/login/**" // ✅ necessario per OAuth2
                         ).permitAll()
 
-
                         .requestMatchers(HttpMethod.GET, "/viaggi/**").permitAll()
-
-
                         .requestMatchers(HttpMethod.POST, "/viaggi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/viaggi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/viaggi/**").hasRole("ADMIN")
-
 
                         .requestMatchers(HttpMethod.POST, "/richieste").permitAll()
                         .requestMatchers(HttpMethod.GET, "/richieste").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/richieste/**/rispondi").hasRole("ADMIN")
 
-
                         .requestMatchers(HttpMethod.POST, "/chat/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/chat/**").permitAll()
                         .requestMatchers("/ws-chat/**").permitAll()
-
 
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())

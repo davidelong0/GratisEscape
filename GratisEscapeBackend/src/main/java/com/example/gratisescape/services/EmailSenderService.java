@@ -15,8 +15,8 @@ public class EmailSenderService {
         this.mailSender = mailSender;
     }
 
-    public void sendConfirmationEmail(String toEmail, String backendUrl, String token) throws MessagingException {
-        String link = backendUrl + "/auth/confirm?token=" + token;
+    public void sendConfirmationEmail(String toEmail, String frontendUrl, String token) throws MessagingException {
+        String link = frontendUrl + "/confirm?token=" + token; // ✅ URL corretto per frontend
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);

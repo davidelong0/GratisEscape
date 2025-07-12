@@ -16,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class AuthService {
 
@@ -25,7 +27,8 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final EmailSenderService emailSender;
 
-    public AuthService(UserRepository userRepo, PasswordEncoder encoder, JwtService jwtService, AuthenticationManager authManager, EmailSenderService emailSender) {
+    public AuthService(UserRepository userRepo, PasswordEncoder encoder, JwtService jwtService,
+                       AuthenticationManager authManager, EmailSenderService emailSender) {
         this.userRepo = userRepo;
         this.encoder = encoder;
         this.jwtService = jwtService;
@@ -52,6 +55,7 @@ public class AuthService {
 
         String token = jwtService.generateEmailConfirmationToken(user);
         try {
+            // 👇 Usa l'URL passato dal controller, deve essere http://localhost:5173
             emailSender.sendConfirmationEmail(user.getEmail(), appUrl, token);
         } catch (MessagingException e) {
             return ResponseEntity.status(500).body("Errore invio email conferma.");
@@ -62,26 +66,29 @@ public class AuthService {
 
     public ResponseEntity<?> confirmEmail(String token) {
         if (!jwtService.isEmailConfirmationToken(token)) {
-            return ResponseEntity.badRequest().body("Token di conferma email non valido");
+            return ResponseEntity.badRequest().body(Map.of("message", "Token di conferma email non valido"));
         }
 
         String email = jwtService.extractUsername(token);
         User user = userRepo.findByEmail(email).orElse(null);
         if (user == null) {
-            return ResponseEntity.badRequest().body("Utente non trovato");
-        }
-        if (user.isEnabled()) {
-            return ResponseEntity.badRequest().body("Account già abilitato");
+            return ResponseEntity.badRequest().body(Map.of("message", "Utente non trovato"));
         }
 
+        if (user.isEnabled()) {
+            return ResponseEntity.ok(Map.of("message", "Account già confermato!"));
+        }
+
+        // 🔐 VALIDAZIONE PRIMA DELL’ABILITAZIONE
         if (!jwtService.isTokenValid(token, user)) {
-            return ResponseEntity.badRequest().body("Token scaduto o non valido");
+            return ResponseEntity.badRequest().body(Map.of("message", "Token scaduto o non valido"));
         }
 
         user.setEnabled(true);
         userRepo.save(user);
-        return ResponseEntity.ok("Email confermata con successo. Puoi ora effettuare il login.");
+        return ResponseEntity.ok(Map.of("message", "Email confermata con successo. Puoi ora effettuare il login."));
     }
+
 
     public ResponseEntity<?> loginUser(UserLoginDTO dto) {
         try {
@@ -103,13 +110,12 @@ public class AuthService {
             }
 
             String token = jwtService.generateToken(user);
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(Map.of("token", token, "user", user));
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Credenziali non valide");
         }
     }
 
-    // Cambio password normale
     public ResponseEntity<?> changePassword(String email, String oldPassword, String newPassword) {
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
@@ -125,7 +131,6 @@ public class AuthService {
         return ResponseEntity.ok("Password cambiata con successo");
     }
 
-    // Cambio password primo accesso admin
     public ResponseEntity<?> changePasswordFirst(ChangePasswordDTO dto) {
         User admin = userRepo.findByEmail("admin@gratisescape.com")
                 .orElseThrow(() -> new RuntimeException("Admin non trovato"));
@@ -145,6 +150,7 @@ public class AuthService {
         return ResponseEntity.ok("Password admin cambiata con successo");
     }
 }
+
 
 
 

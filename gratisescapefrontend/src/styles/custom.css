@@ -1,0 +1,28 @@
+body {
+    background-color: #fefefe;
+    color: #0a1f44;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  h1, h2, h3, h4 {
+    color: #0a1f44;
+  }
+  
+  .btn-primary {
+    background-color: #004ea2;
+    border-color: #004ea2;
+  }
+  
+  .btn-primary:hover {
+    background-color: #003b7a;
+    border-color: #003b7a;
+  }
+  
+  .gold-text {
+    color: #caa95a;
+  }
+  
+  .perla-bg {
+    background-color: #f6f5f3;
+  }
+  

@@ -1,20 +1,21 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Viaggi from './pages/Viaggi'
-import Admin from './pages/Admin'
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import routes from './routes'
+import Navbar from './components/layout/Navbar'
 
 function App() {
   return (
-    <Router>
+    <>
+      <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/viaggi" element={<Viaggi />} />
-        <Route path="/admin" element={<Admin />} />
+        {routes.map((route, i) => (
+          <Route key={i} path={route.path} element={<route.component />} />
+        ))}
       </Routes>
-    </Router>
+    </>
   )
 }
 
 export default App
+
+

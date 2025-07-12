@@ -37,41 +37,13 @@ public class AuthController {
 
     @GetMapping("/confirm")
     public void confirmEmail(@RequestParam String token, HttpServletResponse response) throws IOException {
-        System.out.println("🔑 Token ricevuto: " + token);
+        ResponseEntity<?> result = authService.confirmEmail(token);
 
-        if (!jwtService.isEmailConfirmationToken(token)) {
-            System.out.println("❌ Token non valido per conferma email");
-            response.sendRedirect("http://localhost:3000/errore-conferma");
-            return;
+        if (result.getStatusCode().is2xxSuccessful()) {
+            response.sendRedirect("http://localhost:5173/login?confirmed=true");
+        } else {
+            response.sendRedirect("http://localhost:5173/errore-conferma");
         }
-
-        String email = jwtService.extractUsername(token);
-        System.out.println("📧 Email estratta: " + email);
-
-        User user = userRepo.findByEmail(email).orElse(null);
-        if (user == null) {
-            System.out.println("❌ Utente non trovato");
-            response.sendRedirect("http://localhost:3000/errore-conferma");
-            return;
-        }
-
-        if (user.isEnabled()) {
-            System.out.println("ℹ️ Utente già confermato");
-            response.sendRedirect("http://localhost:3000/login?alreadyConfirmed=true");
-            return;
-        }
-
-        if (!jwtService.isTokenValid(token, user)) {
-            System.out.println("❌ Token non valido");
-            response.sendRedirect("http://localhost:3000/errore-conferma");
-            return;
-        }
-
-        user.setEnabled(true);
-        userRepo.save(user);
-        System.out.println("✅ Utente abilitato: " + email);
-
-        response.sendRedirect("http://localhost:3000/login?confirmed=true");
     }
 
     @PostMapping("/login")

@@ -31,7 +31,7 @@ const routes = [
   { path: '/richiesta', component: () => <PrivateRoute><RichiestaPage /></PrivateRoute> },
   { path: '/chat/:richiestaId', component: () => <PrivateRoute><ChatPage /></PrivateRoute> },
   { path: '/admin/viaggi', component: () => <PrivateRoute roles={['ADMIN']}><AdminViaggiPage /></PrivateRoute> },
-  { path: '/confirm', component: ConfermaEmailPage },
+  { path: '/conferma-email', component: ConfermaEmailPage },
   { path: '/admin/richieste', component: () => <PrivateRoute roles={['ADMIN']}><AdminRichiestePage /></PrivateRoute> }
 ]
 

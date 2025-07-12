@@ -55,7 +55,6 @@ public class AuthService {
 
         String token = jwtService.generateEmailConfirmationToken(user);
         try {
-            // 👇 Usa l'URL passato dal controller, deve essere http://localhost:5173
             emailSender.sendConfirmationEmail(user.getEmail(), appUrl, token);
         } catch (MessagingException e) {
             return ResponseEntity.status(500).body("Errore invio email conferma.");
@@ -66,29 +65,27 @@ public class AuthService {
 
     public ResponseEntity<?> confirmEmail(String token) {
         if (!jwtService.isEmailConfirmationToken(token)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Token di conferma email non valido"));
+            return ResponseEntity.badRequest().body("Token di conferma email non valido.");
         }
 
         String email = jwtService.extractUsername(token);
         User user = userRepo.findByEmail(email).orElse(null);
         if (user == null) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Utente non trovato"));
+            return ResponseEntity.badRequest().body("Utente non trovato.");
         }
 
         if (user.isEnabled()) {
-            return ResponseEntity.ok(Map.of("message", "Account già confermato!"));
+            return ResponseEntity.ok("Email già confermata. Effettua il login.");
         }
 
-        // 🔐 VALIDAZIONE PRIMA DELL’ABILITAZIONE
         if (!jwtService.isTokenValid(token, user)) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Token scaduto o non valido"));
+            return ResponseEntity.badRequest().body("Token scaduto o non valido.");
         }
 
         user.setEnabled(true);
         userRepo.save(user);
-        return ResponseEntity.ok(Map.of("message", "Email confermata con successo. Puoi ora effettuare il login."));
+        return ResponseEntity.ok("Email confermata con successo. Ora puoi effettuare il login.");
     }
-
 
     public ResponseEntity<?> loginUser(UserLoginDTO dto) {
         try {
@@ -150,6 +147,7 @@ public class AuthService {
         return ResponseEntity.ok("Password admin cambiata con successo");
     }
 }
+
 
 
 

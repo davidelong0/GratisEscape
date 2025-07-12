@@ -23,8 +23,9 @@ const ConfermaEmailPage = () => {
         toast.success(res.data);
         setTimeout(() => navigate("/login"), 2500);
       })
-      .catch(() => {
-        toast.error("Errore nella conferma email");
+      .catch((err) => {
+        const msg = err.response?.data || "Errore nella conferma email";
+        toast.error(msg);
         navigate("/login");
       })
       .finally(() => setLoading(false));
@@ -38,4 +39,5 @@ const ConfermaEmailPage = () => {
 };
 
 export default ConfermaEmailPage;
+
 

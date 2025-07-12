@@ -30,11 +30,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Ruolo ruolo;
 
-    private boolean isEnabled = true;
-
+    @Column(nullable = false)
+    private boolean isEnabled; // ⚠️ Nessun valore predefinito. Viene gestito dal codice.
 
     private boolean passwordChanged = false;
 }
+
 
 
 

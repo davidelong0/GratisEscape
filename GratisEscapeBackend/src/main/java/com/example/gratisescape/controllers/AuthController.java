@@ -7,13 +7,10 @@ import com.example.gratisescape.models.User;
 import com.example.gratisescape.repositories.UserRepository;
 import com.example.gratisescape.config.JwtService;
 import com.example.gratisescape.services.AuthService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/auth")
@@ -36,14 +33,8 @@ public class AuthController {
     }
 
     @GetMapping("/confirm")
-    public void confirmEmail(@RequestParam String token, HttpServletResponse response) throws IOException {
-        ResponseEntity<?> result = authService.confirmEmail(token);
-
-        if (result.getStatusCode().is2xxSuccessful()) {
-            response.sendRedirect("http://localhost:5173/login?confirmed=true");
-        } else {
-            response.sendRedirect("http://localhost:5173/errore-conferma");
-        }
+    public ResponseEntity<?> confirmEmail(@RequestParam String token) {
+        return authService.confirmEmail(token);
     }
 
     @PostMapping("/login")
@@ -62,8 +53,6 @@ public class AuthController {
         return authService.changePasswordFirst(dto);
     }
 }
-
-
 
 
 

@@ -20,9 +20,8 @@ const Register = () => {
         form,
         {
           headers: {
-            "Content-Type": "application/json",
-            Origin: window.location.origin,
-          },
+            "Content-Type": "application/json"
+          }
         }
       );
       toast.success("Registrazione riuscita! Controlla la mail per confermare.");
@@ -47,3 +46,4 @@ const Register = () => {
 };
 
 export default Register;
+

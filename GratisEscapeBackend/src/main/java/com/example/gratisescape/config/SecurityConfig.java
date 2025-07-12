@@ -38,6 +38,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .cors(Customizer.withDefaults()) // ✅ AGGIUNGI QUESTA RIGA
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -50,22 +51,18 @@ public class SecurityConfig {
                                 "/auth/reset-password",
                                 "/public/**",
                                 "/oauth2/**",
-                                "/login/**" // ✅ necessario per OAuth2
+                                "/login/**"
                         ).permitAll()
-
                         .requestMatchers(HttpMethod.GET, "/viaggi/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/viaggi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/viaggi/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/viaggi/**").hasRole("ADMIN")
-
                         .requestMatchers(HttpMethod.POST, "/richieste").permitAll()
                         .requestMatchers(HttpMethod.GET, "/richieste").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/richieste/**/rispondi").hasRole("ADMIN")
-
                         .requestMatchers(HttpMethod.POST, "/chat/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/chat/**").permitAll()
                         .requestMatchers("/ws-chat/**").permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
@@ -77,6 +74,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

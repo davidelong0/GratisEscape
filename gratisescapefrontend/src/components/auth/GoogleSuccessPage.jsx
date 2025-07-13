@@ -1,26 +1,43 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { LOGIN_SUCCESS } from '../../redux/actions/authActions'
 
 const GoogleSuccessPage = () => {
   const [params] = useSearchParams()
-  const token = params.get('token')
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (token) {
-      const user = { email: 'Google User' } // placeholder, puoi estrarre dal backend se serve
+    const token = params.get('token')
+    const nome = params.get('nome')
+    const cognome = params.get('cognome')
+    const email = params.get('email')
+    const ruolo = params.get('ruolo')
+
+    if (token && email) {
       localStorage.setItem('token', token)
-      dispatch({ type: LOGIN_SUCCESS, payload: { user, token } })
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: {
+          token,
+          user: {
+            nome,
+            cognome,
+            email,
+            ruolo,
+          },
+        },
+      })
       navigate('/')
+    } else {
+      navigate('/login')
     }
-  }, [token])
+  }, [params, dispatch, navigate])
 
   return (
     <div className="container mt-5">
-      <h2>Login con Google completato!</h2>
+      <h2>Login con Google in corso...</h2>
     </div>
   )
 }

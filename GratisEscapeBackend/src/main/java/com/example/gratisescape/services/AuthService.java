@@ -107,11 +107,23 @@ public class AuthService {
             }
 
             String token = jwtService.generateToken(user);
-            return ResponseEntity.ok(Map.of("token", token, "user", user));
+
+            Map<String, Object> response = Map.of(
+                    "token", token,
+                    "user", Map.of(
+                            "nome", user.getNome(),
+                            "cognome", user.getCognome(),
+                            "email", user.getEmail(),
+                            "ruolo", user.getRuolo().name()
+                    )
+            );
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Credenziali non valide");
         }
     }
+
 
     public ResponseEntity<?> changePassword(String email, String oldPassword, String newPassword) {
         User user = userRepo.findByEmail(email)

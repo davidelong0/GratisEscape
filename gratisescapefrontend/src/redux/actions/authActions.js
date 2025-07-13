@@ -14,7 +14,15 @@ export const login = (credentials, navigate) => async (dispatch) => {
     toast.success("Login effettuato con successo!");
     navigate("/");
   } catch (error) {
-    toast.error("Credenziali errate");
+    if (
+      error.response?.status === 403 &&
+      error.response.data === "Devi cambiare la password al primo accesso."
+    ) {
+      toast.info("Devi cambiare la password al primo accesso.");
+      navigate("/change-password-first");
+    } else {
+      toast.error("Credenziali errate");
+    }
   }
 };
 

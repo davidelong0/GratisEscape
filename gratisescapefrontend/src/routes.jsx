@@ -14,6 +14,7 @@ import RichiestaPage from './pages/RichiestaPage'
 import ChatPage from './pages/ChatPage'
 import AdminViaggiPage from './pages/admin/AdminViaggiPage'
 import AdminRichiestePage from './pages/admin/AdminRichiestePage'
+import ChangePasswordFirst from './components/auth/ChangePasswordFirst'
 import ConfermaEmailPage from './pages/ConfermaEmailPage';
 
 const routes = [
@@ -27,6 +28,7 @@ const routes = [
   { path: '/oauth-success', component: GoogleSuccessPage },
   { path: '/protected', component: () => <PrivateRoute><ProtectedPage /></PrivateRoute> },
   { path: '/viaggi', component: ViaggiPage },
+  { path: '/change-password-first', component: ChangePasswordFirst },
   { path: '/viaggi/:id', component: DettaglioViaggioPage },
   { path: '/richiesta', component: () => <PrivateRoute><RichiestaPage /></PrivateRoute> },
   { path: '/chat/:richiestaId', component: () => <PrivateRoute><ChatPage /></PrivateRoute> },

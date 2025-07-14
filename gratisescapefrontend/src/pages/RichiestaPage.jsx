@@ -1,48 +1,30 @@
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
-import api from '../services/api'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import React, { useState } from 'react';
+import RichiestaChatForm from '../components/richieste/RichiestaChatForm';
+import RichiestaEmailForm from '../components/richieste/RichiestaEmailForm';
 
 const RichiestaPage = () => {
-  const { user } = useSelector(state => state.auth)
-  const [testo, setTesto] = useState('')
-  const navigate = useNavigate()
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!testo.trim()) {
-      toast.warning('Inserisci una richiesta valida')
-      return
-    }
-
-    try {
-      const res = await api.post('/richieste', {
-        testoRichiesta: testo,
-        emailUtente: user.email,
-      })
-      toast.success('Richiesta inviata')
-      navigate(`/chat/${res.data.id}`) // 👈 Vai alla chat direttamente
-    } catch {
-      toast.error('Errore invio richiesta')
-    }
-  }
+  const [tipo, setTipo] = useState(null);
 
   return (
-    <div className="container mt-5">
-      <h3>Richiesta personalizzata</h3>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          className="form-control mb-3"
-          rows={5}
-          value={testo}
-          onChange={(e) => setTesto(e.target.value)}
-          placeholder="Scrivi la tua richiesta personalizzata..."
-        />
-        <button className="btn btn-primary">Invia Richiesta</button>
-      </form>
+    <div className="container mt-4">
+      {!tipo && (
+        <>
+          <h3 className="mb-3">Come vuoi inviare la tua richiesta?</h3>
+          <div className="d-flex gap-3">
+            <button className="btn btn-primary" onClick={() => setTipo("chat")}>
+              <i className="bi bi-chat-dots-fill me-1"></i> Chat
+            </button>
+            <button className="btn btn-secondary" onClick={() => setTipo("email")}>
+              <i className="bi bi-envelope-fill me-1"></i> Email
+            </button>
+          </div>
+        </>
+      )}
+      {tipo === "chat" && <RichiestaChatForm />}
+      {tipo === "email" && <RichiestaEmailForm />}
     </div>
-  )
-}
+  );
+};
 
-export default RichiestaPage
+export default RichiestaPage;
+

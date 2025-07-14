@@ -1,83 +1,95 @@
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { logout } from '../../redux/actions/authActions'
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../redux/actions/authActions';
+import { toast } from 'react-toastify';
 
 const Navbar = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
-  const { token, user } = useSelector(state => state.auth)
-  const isAdmin = user?.ruolo === "ADMIN"
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logout())
-    navigate('/')
-  }
+    dispatch(logout());
+    toast.info("Logout effettuato");
+    navigate("/login");
+  };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-      <div className="container-fluid">
-        <Link className="navbar-brand fw-bold" to="/">GratisEscape</Link>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-4">
+      <Link className="navbar-brand" to="/">
+        GratisEscape
+      </Link>
+      <div className="collapse navbar-collapse">
+        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <li className="nav-item">
+            <Link className="nav-link" to="/viaggi">
+              Viaggi
+            </Link>
+          </li>
 
-        <div className="collapse navbar-collapse">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          {user && (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/richiesta">
+                  Richiesta
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/preferiti">
+                  Preferiti
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/profilo">
+                  Profilo
+                </Link>
+              </li>
+            </>
+          )}
+
+          {user?.ruolo === 'ADMIN' && (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/admin/viaggi">
+                  Gestione Viaggi
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/admin/richieste">
+                  Gestione Richieste
+                </Link>
+              </li>
+            </>
+          )}
+        </ul>
+
+        <ul className="navbar-nav ms-auto">
+          {!user ? (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">
+                  Login
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/register">
+                  Registrati
+                </Link>
+              </li>
+            </>
+          ) : (
             <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
+              <button className="btn btn-outline-light" onClick={handleLogout}>
+                Logout
+              </button>
             </li>
-
-            {token && !isAdmin && (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/viaggi">Viaggi</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/richiesta">Richiesta personalizzata</Link>
-                </li>
-              </>
-            )}
-
-            {token && isAdmin && (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/admin/viaggi">Gestione Viaggi</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/admin/richieste">Gestione Richieste</Link>
-                </li>
-              </>
-            )}
-          </ul>
-
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            {!token ? (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/login">Login</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/register">Registrati</Link>
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="nav-item me-2 d-flex align-items-center">
-                  <span className="nav-link disabled text-muted">
-                    {user?.nome} {user?.cognome} ({user?.ruolo})
-                  </span>
-                </li>
-                <li className="nav-item">
-                  <button className="btn btn-outline-danger" onClick={handleLogout}>
-                    Logout
-                  </button>
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
+          )}
+        </ul>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
+

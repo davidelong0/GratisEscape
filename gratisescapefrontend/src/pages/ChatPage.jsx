@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../services/api'
-import SockJS from "sockjs-client/dist/sockjs";
+import SockJS from 'sockjs-client/dist/sockjs'
 import { Client } from '@stomp/stompjs'
 import { useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
@@ -21,7 +21,7 @@ const ChatPage = () => {
       .catch(() => toast.error('Errore nel recupero della chat'))
 
     // Connessione WebSocket
-    const socket = new SockJS('http://localhost:8080/ws')
+    const socket = new SockJS('http://localhost:8080/ws-chat') // endpoint corretto
     const stomp = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -48,18 +48,23 @@ const ChatPage = () => {
 
   const sendMessage = () => {
     if (!text.trim()) return
-    const msg = {
-      richiestaId: parseInt(richiestaId),
-      mittente: user.email,
-      messaggio: text
+
+    if (stompClientRef.current && stompClientRef.current.connected) {
+      const msg = {
+        richiestaId: parseInt(richiestaId),
+        mittente: user.email,
+        messaggio: text
+      }
+
+      stompClientRef.current.publish({
+        destination: '/app/chat.sendMessage',
+        body: JSON.stringify(msg)
+      })
+
+      setText('')
+    } else {
+      toast.error("La connessione alla chat non è ancora stata stabilita. Attendi qualche istante.")
     }
-
-    stompClientRef.current.publish({
-      destination: '/app/chat.sendMessage',
-      body: JSON.stringify(msg)
-    })
-
-    setText('')
   }
 
   return (
@@ -79,10 +84,13 @@ const ChatPage = () => {
           onChange={(e) => setText(e.target.value)}
           placeholder="Scrivi un messaggio..."
         />
-        <button className="btn btn-primary" onClick={sendMessage}>Invia</button>
+        <button className="btn btn-primary" onClick={sendMessage}>
+          Invia
+        </button>
       </div>
     </div>
   )
 }
 
 export default ChatPage
+

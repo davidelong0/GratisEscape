@@ -8,7 +8,7 @@ import {
 const initialState = {
   user: null,
   token: localStorage.getItem("token") || null,
-  favourites: [],
+  favourites: JSON.parse(localStorage.getItem("favourites") || "[]"),
 };
 
 const authReducer = (state = initialState, action) => {
@@ -19,25 +19,37 @@ const authReducer = (state = initialState, action) => {
         user: action.payload.user,
         token: action.payload.token,
       };
+
     case LOGOUT:
+      localStorage.removeItem("token");
       return {
         ...state,
         user: null,
         token: null,
-        favourites: [],
+        // mantieni preferiti se vuoi che restino persistenti, altrimenti svuota
+        favourites: JSON.parse(localStorage.getItem("favourites") || "[]"),
       };
-    case ADD_FAVOURITE:
+
+    case ADD_FAVOURITE: {
       if (state.favourites.some((f) => f.id === action.payload.id))
         return state;
+      const updated = [...state.favourites, action.payload];
+      localStorage.setItem("favourites", JSON.stringify(updated));
       return {
         ...state,
-        favourites: [...state.favourites, action.payload],
+        favourites: updated,
       };
-    case REMOVE_FAVOURITE:
+    }
+
+    case REMOVE_FAVOURITE: {
+      const updated = state.favourites.filter((f) => f.id !== action.payload);
+      localStorage.setItem("favourites", JSON.stringify(updated));
       return {
         ...state,
-        favourites: state.favourites.filter((f) => f.id !== action.payload),
+        favourites: updated,
       };
+    }
+
     default:
       return state;
   }

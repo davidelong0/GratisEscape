@@ -4,6 +4,7 @@ import com.example.gratisescape.dto.RispostaDTO;
 import com.example.gratisescape.models.Richiesta;
 import com.example.gratisescape.services.RichiestaService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +41,16 @@ public class RichiestaController {
         richiestaService.inviaRisposta(richiesta, rispostaDTO.risposta());
         return ResponseEntity.ok("Risposta inviata");
     }
+
+    // ✅ NUOVO METODO PER RECUPERARE LE RICHIESTE DELL'UTENTE LOGGATO
+    @GetMapping("/mie")
+    public ResponseEntity<List<Richiesta>> getRichiesteUtente(Authentication authentication) {
+        String email = authentication.getName();
+        List<Richiesta> richiesteUtente = richiestaService.getRichiesteByEmail(email);
+        return ResponseEntity.ok(richiesteUtente);
+    }
 }
+
 
 
 

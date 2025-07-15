@@ -5,12 +5,32 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      global: "globalthis", // ✅ per fixare `global is not defined`
+      global: "globalthis",
       process: "process/browser",
       buffer: "buffer",
     },
   },
   define: {
     global: "globalThis",
+  },
+  server: {
+    proxy: {
+      "/richieste": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/auth": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/chat": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+      },
+      // aggiungi altre rotte se necessario
+    },
   },
 });

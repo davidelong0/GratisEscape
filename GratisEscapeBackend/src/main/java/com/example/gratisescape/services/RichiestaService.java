@@ -41,6 +41,7 @@ public class RichiestaService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(richiesta.getEmailUtente());
+
             helper.setSubject("Risposta alla tua richiesta - GratisEscape");
             helper.setText(
                     "Ciao,<br><br>" +
@@ -48,7 +49,6 @@ public class RichiestaService {
                             "Risposta dell'agenzia:<br><b>" + risposta + "</b><br><br>" +
                             "Grazie,<br>GratisEscape", true
             );
-
             mailSender.send(message);
 
             richiesta.setRisposta(risposta);
@@ -59,11 +59,16 @@ public class RichiestaService {
         }
     }
 
-    // ✅ METODO AGGIUNTO
     public List<Richiesta> getRichiesteByEmail(String emailUtente) {
         return richiestaRepo.findByEmailUtente(emailUtente);
     }
+
+    // NUOVO: metodo per eliminare richiesta
+    public void delete(Long id) {
+        richiestaRepo.deleteById(id);
+    }
 }
+
 
 
 

@@ -60,6 +60,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/richieste").permitAll()
                         .requestMatchers(HttpMethod.GET, "/richieste").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/richieste/**/rispondi").hasRole("ADMIN")
+                        // Ecco la riga aggiunta per DELETE richieste solo admin:
+                        .requestMatchers(HttpMethod.DELETE, "/richieste/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/chat/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/chat/**").permitAll()
                         .requestMatchers("/ws-chat/**").permitAll()
@@ -86,6 +88,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
 
 
 

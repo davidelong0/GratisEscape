@@ -21,8 +21,8 @@ const RichiestaChatForm = () => {
 
     try {
       const res = await api.post('/richieste', {
-        emailUtente: user.email,
         testoRichiesta: `Destinazione: ${destinazione}\n\n${descrizione}`
+        // emailUtente rimosso, lo gestisce backend
       });
 
       const richiestaId = res.data.id;
@@ -67,4 +67,3 @@ const RichiestaChatForm = () => {
 };
 
 export default RichiestaChatForm;
-

@@ -18,8 +18,8 @@ const RichiestaEmailForm = () => {
 
     try {
       await api.post('/richieste', {
-        emailUtente: user.email,
         testoRichiesta: `Destinazione: ${destinazione}\n\n${descrizione}`
+        // emailUtente rimosso, lo gestisce backend
       });
 
       toast.success("Richiesta inviata con successo!");
@@ -33,16 +33,27 @@ const RichiestaEmailForm = () => {
   return (
     <div className="container mt-4">
       <form onSubmit={handleInvioEmail}>
-        <input className="form-control" placeholder="Destinazione"
-          value={destinazione} onChange={(e) => setDestinazione(e.target.value)} required />
-        <textarea className="form-control mt-2" rows={4} placeholder="Descrizione"
-          value={descrizione} onChange={(e) => setDescrizione(e.target.value)} required />
-        <button className="btn btn-secondary mt-3">Invia via email</button>
+        <input
+          className="form-control"
+          placeholder="Destinazione"
+          value={destinazione}
+          onChange={(e) => setDestinazione(e.target.value)}
+          required
+        />
+        <textarea
+          className="form-control mt-2"
+          rows={4}
+          placeholder="Descrizione"
+          value={descrizione}
+          onChange={(e) => setDescrizione(e.target.value)}
+          required
+        />
+        <button className="btn btn-secondary mt-3" type="submit">
+          Invia via email
+        </button>
       </form>
     </div>
   );
 };
 
 export default RichiestaEmailForm;
-
-

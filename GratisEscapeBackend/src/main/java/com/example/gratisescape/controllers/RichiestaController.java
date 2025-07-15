@@ -20,9 +20,15 @@ public class RichiestaController {
     }
 
     @PostMapping
-    public ResponseEntity<Richiesta> creaRichiesta(@RequestBody Richiesta richiesta) {
-        return ResponseEntity.ok(richiestaService.creaRichiesta(richiesta));
+    public ResponseEntity<Richiesta> creaRichiesta(@RequestBody Richiesta richiesta, Authentication authentication) {
+        // Imposta l'email dell'utente autenticato direttamente da Spring Security
+        String emailUtente = authentication.getName();
+        richiesta.setEmailUtente(emailUtente);
+
+        Richiesta saved = richiestaService.creaRichiesta(richiesta);
+        return ResponseEntity.ok(saved);
     }
+
 
     @GetMapping
     public ResponseEntity<List<Richiesta>> getTutte() {
@@ -42,14 +48,29 @@ public class RichiestaController {
         return ResponseEntity.ok("Risposta inviata");
     }
 
-    // ✅ NUOVO METODO PER RECUPERARE LE RICHIESTE DELL'UTENTE LOGGATO
     @GetMapping("/mie")
     public ResponseEntity<List<Richiesta>> getRichiesteUtente(Authentication authentication) {
         String email = authentication.getName();
         List<Richiesta> richiesteUtente = richiestaService.getRichiesteByEmail(email);
         return ResponseEntity.ok(richiesteUtente);
     }
+
+    // NUOVO: metodo per eliminare richiesta (solo ADMIN)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteRichiesta(@PathVariable Long id) {
+        try {
+            Richiesta richiesta = richiestaService.getById(id);
+            if (richiesta == null) {
+                return ResponseEntity.notFound().build();
+            }
+            richiestaService.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
+
 
 
 

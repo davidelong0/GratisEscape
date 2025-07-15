@@ -1,28 +1,329 @@
+/* Background e testo base */
 body {
-    background-color: #fefefe;
-    color: #0a1f44;
-    font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #fefcf6 0%, #f6f1e7 100%);
+  color: #5a4b27;
+  font-family: 'Georgia', serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* colore bottoni */
+.btn-textcolor {
+  color: #5a4b27 !important;
+  background-color: transparent !important;
+  border: 2px solid #5a4b27 !important;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-textcolor:hover,
+.btn-textcolor:focus {
+  background-color: #5a4b27 !important;
+  color: #fff !important;
+  border-color: #4b3f20 !important;
+}
+
+.btn-modify {
+  color: #5a4b27;
+  background-color: transparent;
+  border: 2px solid #5a4b27;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-modify:hover,
+.btn-modify:focus {
+  background-color: #5a4b27;
+  color: white;
+  border-color: #4b3f20;
+  outline: none;
+  box-shadow: 0 0 6px #4b3f20;
+}
+
+.btn-delete {
+  color: #5a4b27;
+  background-color: transparent;
+  border: 2px solid #5a4b27;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-delete:hover,
+.btn-delete:focus {
+  background-color: #5a4b27;
+  color: white;
+  border-color: #4b3f20;
+  outline: none;
+  box-shadow: 0 0 6px #4b3f20;
+}
+
+.btn-outline-gold {
+  color: #a67c52 !important;
+  border-color: #a67c52 !important;
+  background-color: transparent !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+
+.btn-outline-gold:hover,
+.btn-outline-gold:focus {
+  background-color: #a67c52 !important;
+  color: #fff !important;
+  border-color: #7a5c16 !important;
+  outline: none;
+}
+
+/* Navbar panna - bianco sporco */
+.navbar {
+  background: linear-gradient(90deg, #f9f0f1 0%, #efe9dd 100%);
+  box-shadow: 0 3px 6px rgba(118, 90, 41, 0.12);
+  font-weight: 600;
+  border-bottom: 1px solid #d9d1bc;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* Brand GratisEscape centrato e animato */
+.navbar .navbar-brand {
+  font-family: 'Georgia', serif;
+  font-weight: 900;
+  font-size: 1.8rem;
+  background: linear-gradient(270deg, #b0882f, #e3c26f, #a67c52, #f5e79e);
+  background-size: 600% 600%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: goldGradientShift 8s ease infinite;
+  user-select: none;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px #fdf6e3;
+}
+
+/* Navbar nav links bianchi con sfumatura e hover */
+.navbar .nav-link {
+  color: white !important;
+  font-weight: 600;
+  text-shadow: 0 0 3px rgba(166, 124, 82, 0.8);
+  transition: color 0.4s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #f5e79e !important;
+  text-shadow: 0 0 8px rgba(255, 223, 93, 0.8);
+}
+
+/* Pulsanti "Vedi tutti" su bianco con bordo oro */
+.btn-outline-primary {
+  color: #a67c52;
+  border-color: #a67c52;
+  background-color: #fff;
+  font-weight: 600;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: #a67c52;
+  color: #fff;
+  border-color: #7a5c16;
+}
+
+/* Pulsante Accedi con Google e link password */
+.btn-google {
+  background-color: #f5f1e9;
+  border: 2px solid #a67c52;
+  color: #a67c52;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-google:hover {
+  background-color: #a67c52;
+  color: #fff;
+  border-color: #7a5c16;
+}
+
+/* Link "Password dimenticata" */
+.forgot-password-link {
+  color: #a67c52;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+  color: #7a5c16;
+  text-decoration: none;
+}
+
+/* Card base */
+.card {
+  background: #fffef5;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(166, 124, 82, 0.2);
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 16px rgba(166, 124, 82, 0.35);
+}
+
+/* Immagine fissa altezza */
+.card-img-top {
+  height: 180px;
+  object-fit: cover;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+/* Card body base */
+.card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+/* Pulsanti nel body con margine */
+.card-body .btn {
+  margin-top: 1rem;
+}
+
+/* Animazione scritta Benvenuto */
+@keyframes goldGradientShift {
+  0% {
+    background-position: 0% 50%;
   }
-  
-  h1, h2, h3, h4 {
-    color: #0a1f44;
+  50% {
+    background-position: 100% 50%;
   }
-  
-  .btn-primary {
-    background-color: #004ea2;
-    border-color: #004ea2;
+  100% {
+    background-position: 0% 50%;
   }
-  
-  .btn-primary:hover {
-    background-color: #003b7a;
-    border-color: #003b7a;
+}
+
+/* Solo per le card nella homepage */
+.homepage-container .card {
+  max-width: 220px;
+  height: auto;
+  margin: 0.5rem auto;
+  background: #fffef5;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(166, 124, 82, 0.2);
+  border: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage-container .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 16px rgba(166, 124, 82, 0.35);
+}
+
+.homepage-container .card-img-top {
+  max-height: 140px;
+  width: 100%;
+  object-fit: contain;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: #f9f5e8;
+}
+
+/* Card body più sottile per homepage */
+.homepage-container .card-body {
+  flex-grow: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 0.15rem 0.3rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  min-height: auto;
+  margin: 0;
+}
+
+/* Pulsanti nel body più piccoli */
+.homepage-container .card-body .btn {
+  margin-top: 0.2rem;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+}
+
+/* Titoli e testi più piccoli */
+.homepage-container .card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #7a5c16;
+  margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  height: auto;
+}
+
+/* Dettagli (descrizione) con ellissi */
+.homepage-container .card-text {
+  font-size: 0.75rem;
+  color: #6e5a2b;
+  margin-bottom: 0.2rem;
+  height: 1.2rem; /* altezza fissa per una riga */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* evita a capo */
+}
+
+
+.homepage-container .card-text small {
+  font-size: 0.65rem;
+  color: #a67c52;
+}
+
+/* Responsive - dimensioni ancora più piccole su mobile */
+@media (max-width: 768px) {
+  .homepage-container .card {
+    max-width: 160px;
   }
-  
-  .gold-text {
-    color: #caa95a;
+  .homepage-container .card-img-top {
+    max-height: 110px;
   }
-  
-  .perla-bg {
-    background-color: #f6f5f3;
+  .homepage-container .card-body {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.2rem;
   }
-  
+  .homepage-container .card-title {
+    font-size: 0.8rem;
+  }
+  .homepage-container .card-text {
+    font-size: 0.6rem;
+    height: 1.8rem;
+  }
+}

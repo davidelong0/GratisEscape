@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
-import { Card, Button, Form } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const AdminRichiestePage = () => {
   const [richieste, setRichieste] = useState([]);
-  const [risposte, setRisposte] = useState({});
   const user = useSelector(state => state.auth.user);
   const navigate = useNavigate();
 
@@ -22,41 +21,22 @@ const AdminRichiestePage = () => {
   const fetchRichieste = async () => {
     try {
       const res = await api.get('/richieste');
-      console.log("Richieste ricevute dal backend:", res.data);
       setRichieste(res.data);
     } catch (err) {
       console.error('Errore caricamento richieste', err);
     }
   };
 
-  const handleChange = (id, value) => {
-    setRisposte(prev => ({ ...prev, [id]: value }));
-  };
-
-  const inviaRisposta = async (id) => {
-    try {
-      await api.post(`/richieste/${id}/rispondi`, { risposta: risposte[id] });
-      alert('Risposta inviata con successo');
-      setRisposte(prev => ({ ...prev, [id]: '' }));
-      fetchRichieste(); // aggiorna la lista dopo la risposta
-    } catch (err) {
-      console.error('Errore invio risposta', err);
-      alert('Errore invio risposta');
-    }
-  };
-
   const eliminaRichiesta = async (id) => {
-    console.log("Chiamo DELETE /richieste/" + id);
     if (!id) {
       alert("Errore: ID richiesta non valido");
       return;
     }
     if (window.confirm('Sei sicuro di voler eliminare questa richiesta?')) {
       try {
-        const response = await api.delete(`/richieste/${id}`);
-        console.log("Risposta DELETE:", response);
+        await api.delete(`/richieste/${id}`);
         alert('Richiesta eliminata con successo');
-        fetchRichieste(); // aggiorna la lista dopo l'eliminazione
+        fetchRichieste();
       } catch (err) {
         console.error('Errore eliminazione richiesta:', err);
         if (err.response) {
@@ -75,9 +55,6 @@ const AdminRichiestePage = () => {
         <p>Nessuna richiesta presente.</p>
       ) : (
         richieste.map(r => {
-          // Log per capire come sono i dati
-          console.log("Singola richiesta in map:", r);
-          // Qui verifica se 'id' esiste, altrimenti usa '_id'
           const requestId = r.id || r._id;
           return (
             <motion.div
@@ -85,52 +62,49 @@ const AdminRichiestePage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="mb-4"
+              className="mb-2"
             >
-              <Card>
-                <Card.Body>
-                  <Card.Title>{r.oggetto || 'Richiesta #' + requestId}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">{r.emailUtente}</Card.Subtitle>
-                  <Card.Text><strong>Messaggio:</strong> {r.messaggio || r.testoRichiesta}</Card.Text>
+              <Card style={{ fontSize: '0.9rem' }}>
+                <Card.Body className="py-2 px-3">
+                  <Card.Title className="mb-1" style={{ fontWeight: '600', fontSize: '1rem' }}>
+                    {r.oggetto || ''}
+                  </Card.Title>
 
-                  <Form.Group>
-                    <Form.Label>Rispondi</Form.Label>
-                    <Form.Control
-                      as="textarea"
-                      rows={3}
-                      value={risposte[requestId] || ''}
-                      onChange={(e) => handleChange(requestId, e.target.value)}
-                    />
-                  </Form.Group>
+                  {(r.nome || r.cognome) && (
+                    <Card.Subtitle className="mb-1" style={{ fontSize: '0.9rem', fontWeight: '500' }}>
+                      {`${r.nome || ''} ${r.cognome || ''}`.trim()}
+                    </Card.Subtitle>
+                  )}
 
-                  <Button
-                    className="mt-2 me-2"
-                    variant="success"
-                    onClick={() => inviaRisposta(requestId)}
-                  >
-                    Invia risposta via email
-                  </Button>
+                  <Card.Subtitle className="mb-1 text-muted" style={{ fontSize: '0.85rem' }}>
+                    {r.emailUtente}
+                  </Card.Subtitle>
 
-                  <Button
-                    className="mt-2 me-2"
-                    variant="outline-primary"
-                    onClick={() => navigate(`/chat/${requestId}`)}
-                  >
-                    Apri chat
-                  </Button>
+                  <Card.Text style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>
+                    <strong>Messaggio:</strong> {r.messaggio || r.testoRichiesta}
+                  </Card.Text>
 
-                  <Button
-                    className="mt-2"
-                    variant="outline-danger"
-                    onClick={() => eliminaRichiesta(requestId)}
-                  >
-                    Elimina richiesta
-                  </Button>
+                  <div className="d-flex gap-2">
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={() => navigate(`/chat/${requestId}`)}
+                    >
+                      Apri chat
+                    </Button>
 
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => eliminaRichiesta(requestId)}
+                    >
+                      Elimina richiesta
+                    </Button>
+                  </div>
                 </Card.Body>
               </Card>
             </motion.div>
-          )
+          );
         })
       )}
     </div>

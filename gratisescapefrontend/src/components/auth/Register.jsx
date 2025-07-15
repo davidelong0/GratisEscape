@@ -39,7 +39,10 @@ const Register = () => {
         <input type="text" name="cognome" value={form.cognome} onChange={handleChange} placeholder="Cognome" className="form-control mb-2" />
         <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="Email" className="form-control mb-2" />
         <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="Password" className="form-control mb-3" />
-        <button className="btn btn-primary">Registrati</button>
+        <button className="btn btn-textcolor">
+  Registrati
+</button>
+
       </form>
     </div>
   );

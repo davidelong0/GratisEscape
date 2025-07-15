@@ -12,6 +12,7 @@ const DettaglioViaggioPage = () => {
 
   const dispatch = useDispatch()
   const favourites = useSelector((state) => state.auth.favourites)
+  const isLoggedIn = useSelector((state) => !!state.auth.user)  // verifica login
 
   const isFavourite = favourites.some((f) => f.id === parseInt(id))
 
@@ -33,19 +34,28 @@ const DettaglioViaggioPage = () => {
 
   return (
     <div className="container mt-5">
-      <h2 className="mb-3">{viaggio.nome}</h2>
-      <img src={viaggio.urlImmagine} className="img-fluid mb-3 rounded" alt={viaggio.nome} />
+      <h2 className="mb-3 text-gold">{viaggio.nome}</h2>
+      <img
+        src={viaggio.urlImmagine}
+        className="img-fluid mb-3 rounded shadow"
+        alt={viaggio.nome}
+        style={{ maxHeight: '400px', objectFit: 'cover', width: '100%' }}
+      />
       
       <p><strong>Destinazione:</strong> {viaggio.destinazione}</p>
       <p><strong>Descrizione:</strong> {viaggio.descrizione}</p>
       <p><strong>Prezzo:</strong> €{viaggio.prezzo}</p>
 
-      <Button variant={isFavourite ? "danger" : "outline-danger"} onClick={handleToggleFavourite}>
-        {isFavourite ? <><FaHeart className="me-2" /> Rimuovi dai preferiti</> : <><FaRegHeart className="me-2" /> Aggiungi ai preferiti</>}
-      </Button>
+      {isLoggedIn && (
+        <Button
+          className="btn-outline-gold d-flex align-items-center gap-2"
+          onClick={handleToggleFavourite}
+        >
+          {isFavourite ? <><FaHeart /> Rimuovi dai preferiti</> : <><FaRegHeart /> Aggiungi ai preferiti</>}
+        </Button>
+      )}
     </div>
   )
 }
 
 export default DettaglioViaggioPage
-

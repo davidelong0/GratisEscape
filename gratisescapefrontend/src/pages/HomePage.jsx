@@ -1,17 +1,21 @@
-import React from 'react'
-import ViaggiPerCategoria from '../components/home/ViaggiPerCategoria'
+import React from 'react';
+import PoeticText from '../components/PoeticText';
+import ViaggiPerCategoria from '../components/home/ViaggiPerCategoria';
 
 const HomePage = () => {
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Benvenuto su GratisEscape!</h2>
-      <ViaggiPerCategoria categoria="LAST_MINUTE" titolo="Offerte Last Minute" />
-      <ViaggiPerCategoria categoria="LUXURY" titolo="Viaggi Luxury" />
-      <ViaggiPerCategoria categoria="CROCIERA" titolo="Crociere da sogno" />
-      <ViaggiPerCategoria categoria="GRUPPO" titolo="Viaggi di Gruppo" />
-      <ViaggiPerCategoria categoria="PACCHETTO" titolo="Pacchetti esclusivi" />
-    </div>
-  )
-}
+    <div className="container mt-4 homepage-container">
+      <PoeticText text="Il mondo è un libro e chi non viaggia ne legge solo una pagina." />
 
-export default HomePage
+      <ViaggiPerCategoria categoria="SINGOLO" titolo="Viaggi Singoli" maxItems={12} />
+      <ViaggiPerCategoria categoria="LAST_MINUTE" titolo="Offerte Last Minute" maxItems={8} />
+      <ViaggiPerCategoria categoria="LUXURY" titolo="Viaggi Luxury" maxItems={8} />
+      <ViaggiPerCategoria categoria="CROCIERA" titolo="Crociere da sogno" maxItems={8} />
+      <ViaggiPerCategoria categoria="GRUPPO" titolo="Viaggi di Gruppo" maxItems={8} />
+      <ViaggiPerCategoria categoria="PACCHETTO" titolo="Pacchetti esclusivi" maxItems={8} />
+    </div>
+  );
+};
+
+export default HomePage;
+

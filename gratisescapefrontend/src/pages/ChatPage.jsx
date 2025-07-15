@@ -84,7 +84,7 @@ const ChatPage = () => {
           onChange={(e) => setText(e.target.value)}
           placeholder="Scrivi un messaggio..."
         />
-        <button className="btn btn-primary" onClick={sendMessage}>
+        <button className="btn btn-outline-gold" onClick={sendMessage}>
           Invia
         </button>
       </div>

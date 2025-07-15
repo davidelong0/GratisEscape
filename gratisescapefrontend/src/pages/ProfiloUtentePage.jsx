@@ -28,13 +28,13 @@ const ProfiloUtentePage = () => {
 
   return (
     <div className="container mt-5">
-      <h2 className="mb-4">Profilo Utente</h2>
+      <h2 className="text-gold mb-4">Profilo Utente</h2>
       <p><strong>Nome:</strong> {user?.nome}</p>
       <p><strong>Email:</strong> {user?.email}</p>
 
       <hr className="my-4" />
 
-      <h4>Le mie richieste personalizzate</h4>
+      <h4 className="text-gold mb-3">Le mie richieste personalizzate</h4>
       {richieste.length === 0 ? (
         <p>Nessuna richiesta inviata.</p>
       ) : (
@@ -48,9 +48,10 @@ const ProfiloUtentePage = () => {
           >
             <Card>
               <Card.Body>
-                <Card.Title>{`Richiesta #${r.id}`}</Card.Title>
+                {/* Senza # davanti al numero */}
+                <Card.Title className="request-text">Richiesta {r.id}</Card.Title>
                 <Card.Text>{r.testoRichiesta}</Card.Text>
-                <Link to={`/chat/${r.id}`} className="btn btn-outline-primary btn-sm">
+                <Link to={`/chat/${r.id}`} className="btn btn-request">
                   Apri chat
                 </Link>
               </Card.Body>
@@ -63,4 +64,3 @@ const ProfiloUtentePage = () => {
 };
 
 export default ProfiloUtentePage;
-

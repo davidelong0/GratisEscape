@@ -58,7 +58,7 @@ const RichiestaChatForm = () => {
             required
           ></textarea>
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-outline-gold">
           Invia richiesta e apri chat
         </button>
       </form>

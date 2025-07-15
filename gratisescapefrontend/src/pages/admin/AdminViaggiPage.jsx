@@ -106,7 +106,9 @@ const AdminViaggiPage = () => {
             <input className="form-control" type="file" name="file" onChange={handleChange} accept="image/*" />
           </div>
           <div className="col-md-4 mb-2">
-            <button className="btn btn-success w-100">{editingId ? 'Salva Modifiche' : 'Crea Viaggio'}</button>
+            <button type="submit" className="btn-textcolor w-100">
+              {editingId ? 'Salva Modifiche' : 'Crea Viaggio'}
+            </button>
           </div>
         </div>
       </form>
@@ -117,12 +119,26 @@ const AdminViaggiPage = () => {
           <div key={v.id} className="col-md-4 mb-4">
             <div className="card h-100">
               <img src={v.urlImmagine} className="card-img-top" alt={v.nome} />
-              <div className="card-body">
-                <h5 className="card-title">{v.nome}</h5>
-                <p className="card-text">{v.destinazione} - €{v.prezzo}</p>
-                <p className="card-text"><small>{v.categoria}</small></p>
-                <button onClick={() => handleEdit(v)} className="btn btn-warning btn-sm me-2">Modifica</button>
-                <button onClick={() => handleDelete(v.id)} className="btn btn-danger btn-sm">Elimina</button>
+              <div className="card-body d-flex flex-column justify-content-between">
+                <div>
+                  <h5 className="card-title">{v.nome}</h5>
+                  <p className="card-text">{v.destinazione} - €{v.prezzo}</p>
+                  <p className="card-text"><small>{v.categoria}</small></p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleEdit(v)}
+                    className="btn-modify btn-sm me-2"
+                  >
+                    Modifica
+                  </button>
+                  <button
+                    onClick={() => handleDelete(v.id)}
+                    className="btn-delete btn-sm"
+                  >
+                    Elimina
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -54,61 +54,66 @@ const AdminRichiestePage = () => {
       {richieste.length === 0 ? (
         <p>Nessuna richiesta presente.</p>
       ) : (
-        richieste.map(r => {
-          const requestId = r.id || r._id;
-          return (
-            <motion.div
-              key={requestId}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mb-2"
-            >
-              <Card style={{ fontSize: '0.9rem' }}>
-                <Card.Body className="py-2 px-3">
-                  <Card.Title className="mb-1" style={{ fontWeight: '600', fontSize: '1rem' }}>
-                    {r.oggetto || ''}
-                  </Card.Title>
+        <div className="row">
+          {richieste.map(r => {
+            const requestId = r.id || r._id;
+            return (
+              <motion.div
+                key={requestId}
+                className="col-12 col-sm-6 col-md-4 col-lg-2 mb-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="h-100 shadow-sm" style={{ fontSize: '0.75rem' }}>
+                  <Card.Body className="py-2 px-2 d-flex flex-column justify-content-between">
+                    <div>
+                      <Card.Title className="mb-1" style={{ fontWeight: '600', fontSize: '0.85rem' }}>
+                        {r.oggetto || ''}
+                      </Card.Title>
 
-                  {(r.nome || r.cognome) && (
-                    <Card.Subtitle className="mb-1" style={{ fontSize: '0.9rem', fontWeight: '500' }}>
-                      {`${r.nome || ''} ${r.cognome || ''}`.trim()}
-                    </Card.Subtitle>
-                  )}
+                      {(r.nome || r.cognome) && (
+                        <Card.Subtitle className="mb-1" style={{ fontSize: '0.75rem', fontWeight: '500' }}>
+                          {`${r.nome || ''} ${r.cognome || ''}`.trim()}
+                        </Card.Subtitle>
+                      )}
 
-                  <Card.Subtitle className="mb-1 text-muted" style={{ fontSize: '0.85rem' }}>
-                    {r.emailUtente}
-                  </Card.Subtitle>
+                      <Card.Subtitle className="mb-1 text-muted" style={{ fontSize: '0.7rem' }}>
+                        {r.emailUtente}
+                      </Card.Subtitle>
 
-                  <Card.Text style={{ marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                    <strong>Messaggio:</strong> {r.messaggio || r.testoRichiesta}
-                  </Card.Text>
+                      <Card.Text style={{ marginBottom: '0.5rem', fontSize: '0.7rem' }}>
+                        <strong>Messaggio:</strong> {r.messaggio || r.testoRichiesta}
+                      </Card.Text>
+                    </div>
 
-                  <div className="d-flex gap-2">
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={() => navigate(`/chat/${requestId}`)}
-                    >
-                      Apri chat
-                    </Button>
+                    <div className="d-flex gap-1 mt-2">
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => navigate(`/chat/${requestId}`)}
+                      >
+                        Chat
+                      </Button>
 
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => eliminaRichiesta(requestId)}
-                    >
-                      Elimina richiesta
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            </motion.div>
-          );
-        })
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => eliminaRichiesta(requestId)}
+                      >
+                        Elimina
+                      </Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
 };
 
 export default AdminRichiestePage;
+

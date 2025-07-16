@@ -12,8 +12,10 @@ const DettaglioViaggioPage = () => {
 
   const dispatch = useDispatch()
   const favourites = useSelector((state) => state.auth.favourites)
-  const isLoggedIn = useSelector((state) => !!state.auth.user)  // verifica login
+  const user = useSelector((state) => state.auth.user)
 
+  const isLoggedIn = !!user
+  const isAdmin = user?.ruolo === 'ADMIN'
   const isFavourite = favourites.some((f) => f.id === parseInt(id))
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const DettaglioViaggioPage = () => {
       <p><strong>Descrizione:</strong> {viaggio.descrizione}</p>
       <p><strong>Prezzo:</strong> €{viaggio.prezzo}</p>
 
-      {isLoggedIn && (
+      {isLoggedIn && !isAdmin && (
         <Button
           className="btn-outline-gold d-flex align-items-center gap-2"
           onClick={handleToggleFavourite}

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/chat") // <-- Modifica qui
 public class ChatController {
 
     private final ChatService chatService;
@@ -31,4 +31,5 @@ public class ChatController {
         return ResponseEntity.ok(chat);
     }
 }
+
 

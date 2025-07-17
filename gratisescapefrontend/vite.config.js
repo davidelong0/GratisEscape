@@ -25,12 +25,15 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-      "/chat": {
+      "/api/chat": {
+        // ✅ aggiorna qui (non più /chat)
         target: "http://localhost:8080",
         changeOrigin: true,
         secure: false,
       },
-      // aggiungi altre rotte se necessario
+    },
+    fs: {
+      strict: false,
     },
   },
 });

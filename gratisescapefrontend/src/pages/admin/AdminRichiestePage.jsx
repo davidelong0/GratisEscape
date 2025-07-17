@@ -11,7 +11,8 @@ const AdminRichiestePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user?.ruolo || user.ruolo !== 'ADMIN') {
+    const token = localStorage.getItem("token");
+    if (!token || user?.ruolo !== 'ADMIN') {
       navigate('/');
     } else {
       fetchRichieste();
@@ -116,4 +117,3 @@ const AdminRichiestePage = () => {
 };
 
 export default AdminRichiestePage;
-

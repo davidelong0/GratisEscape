@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import SockJS from 'sockjs-client/dist/sockjs'
 import { Client } from '@stomp/stompjs'
@@ -8,20 +8,30 @@ import { toast } from 'react-toastify'
 
 const ChatPage = () => {
   const { richiestaId } = useParams()
+  const navigate = useNavigate()
   const { user } = useSelector(state => state.auth)
 
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
+  const [loading, setLoading] = useState(true)
   const stompClientRef = useRef(null)
 
   useEffect(() => {
+    if (!user || !user.email) return
+
     // Recupero cronologia messaggi
-    api.get(`/chat/${richiestaId}`)
-      .then(res => setMessages(res.data))
-      .catch(() => toast.error('Errore nel recupero della chat'))
+    api.get(`/api/chat/${richiestaId}`) // <-- Modifica qui
+      .then(res => {
+        setMessages(res.data)
+        setLoading(false)
+      })
+      .catch(() => {
+        toast.error('Errore nel recupero della chat')
+        setLoading(false)
+      })
 
     // Connessione WebSocket
-    const socket = new SockJS('http://localhost:8080/ws-chat') // endpoint corretto
+    const socket = new SockJS('http://localhost:8080/ws-chat')
     const stomp = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -44,7 +54,7 @@ const ChatPage = () => {
     return () => {
       if (stomp.connected) stomp.deactivate()
     }
-  }, [richiestaId])
+  }, [richiestaId, user])
 
   const sendMessage = () => {
     if (!text.trim()) return
@@ -66,6 +76,9 @@ const ChatPage = () => {
       toast.error("La connessione alla chat non è ancora stata stabilita. Attendi qualche istante.")
     }
   }
+
+  if (!user) return <div className="container mt-5">Caricamento utente...</div>
+  if (loading) return <div className="container mt-5">Caricamento messaggi...</div>
 
   return (
     <div className="container mt-5">
@@ -93,4 +106,3 @@ const ChatPage = () => {
 }
 
 export default ChatPage
-

@@ -5,8 +5,10 @@ import {
   REMOVE_FAVOURITE,
 } from "../actions/authActions";
 
+const userFromStorage = localStorage.getItem("user");
+
 const initialState = {
-  user: null,
+  user: userFromStorage ? JSON.parse(userFromStorage) : null,
   token: localStorage.getItem("token") || null,
   favourites: JSON.parse(localStorage.getItem("favourites") || "[]"),
 };
@@ -14,6 +16,8 @@ const initialState = {
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_SUCCESS:
+      localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
       return {
         ...state,
         user: action.payload.user,
@@ -22,11 +26,11 @@ const authReducer = (state = initialState, action) => {
 
     case LOGOUT:
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return {
         ...state,
         user: null,
         token: null,
-        // mantieni preferiti se vuoi che restino persistenti, altrimenti svuota
         favourites: JSON.parse(localStorage.getItem("favourites") || "[]"),
       };
 

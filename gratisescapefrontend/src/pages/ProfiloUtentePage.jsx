@@ -11,11 +11,6 @@ const ProfiloUtentePage = () => {
   const navigate = useNavigate();
   const [richieste, setRichieste] = useState([]);
 
-  useEffect(() => {
-    if (!user) navigate('/login');
-    else fetchRichiesteUtente();
-  }, [user]);
-
   const fetchRichiesteUtente = async () => {
     try {
       const res = await api.get('/richieste/mie');
@@ -25,6 +20,19 @@ const ProfiloUtentePage = () => {
       toast.error('Errore nel caricamento delle richieste');
     }
   };
+
+  useEffect(() => {
+    if (!user) navigate('/login');
+    else fetchRichiesteUtente();
+  }, [user]);
+
+  // ✅ Aggiornamento periodico automatico (es. se l'admin cancella)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchRichiesteUtente();
+    }, 5000); // ogni 5 secondi
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="container mt-5">
@@ -48,8 +56,7 @@ const ProfiloUtentePage = () => {
           >
             <Card>
               <Card.Body>
-                {/* Senza # davanti al numero */}
-                <Card.Title className="request-text">Richiesta {r.id}</Card.Title>
+                <Card.Title className="request-text">Richiesta</Card.Title>
                 <Card.Text>{r.testoRichiesta}</Card.Text>
                 <Link to={`/chat/${r.id}`} className="btn btn-request">
                   Apri chat

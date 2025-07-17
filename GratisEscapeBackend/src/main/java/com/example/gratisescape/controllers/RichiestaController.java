@@ -59,16 +59,13 @@ public class RichiestaController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteRichiesta(@PathVariable Long id) {
         try {
-            Richiesta richiesta = richiestaService.getById(id);
-            if (richiesta == null) {
-                return ResponseEntity.notFound().build();
-            }
-            richiestaService.delete(id);
+            richiestaService.deleteRichiestaConMessaggi(id);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
 
 

@@ -1,9 +1,11 @@
 package com.example.gratisescape.services;
 
 import com.example.gratisescape.models.Richiesta;
+import com.example.gratisescape.repositories.MessaggioChatRepository;
 import com.example.gratisescape.repositories.RichiestaRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,14 @@ import java.util.List;
 public class RichiestaService {
 
     private final RichiestaRepository richiestaRepo;
+    private final MessaggioChatRepository messaggioChatRepo;
     private final JavaMailSender mailSender;
 
-    public RichiestaService(RichiestaRepository richiestaRepo, JavaMailSender mailSender) {
+    public RichiestaService(RichiestaRepository richiestaRepo,
+                            MessaggioChatRepository messaggioChatRepo,
+                            JavaMailSender mailSender) {
         this.richiestaRepo = richiestaRepo;
+        this.messaggioChatRepo = messaggioChatRepo;
         this.mailSender = mailSender;
     }
 
@@ -63,11 +69,22 @@ public class RichiestaService {
         return richiestaRepo.findByEmailUtente(emailUtente);
     }
 
-    // NUOVO: metodo per eliminare richiesta
-    public void delete(Long id) {
+    // Metodo aggiornato: elimina prima i messaggi, poi la richiesta
+    @Transactional
+    public void deleteRichiestaConMessaggi(Long id) {
+        // Verifica esistenza richiesta
+        if (!richiestaRepo.existsById(id)) {
+            throw new RuntimeException("Richiesta non trovata");
+        }
+
+        // Elimina i messaggi collegati
+        messaggioChatRepo.deleteByRichiestaId(id);
+
+        // Elimina la richiesta
         richiestaRepo.deleteById(id);
     }
 }
+
 
 
 

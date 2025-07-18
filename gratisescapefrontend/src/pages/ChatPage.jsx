@@ -1,4 +1,3 @@
-// ChatPage.jsx
 import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
@@ -21,6 +20,7 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(true)
+  const [utenteRichiesta, setUtenteRichiesta] = useState(null)
   const stompClientRef = useRef(null)
 
   useEffect(() => {
@@ -42,6 +42,19 @@ const ChatPage = () => {
         setLoading(false)
       })
 
+    // Solo lato admin: recupera utente della richiesta
+    if (user.ruolo === 'ADMIN') {
+      api.get(`/richieste/${richiestaId}`)
+        .then(res => {
+          if (res.data && res.data.utente) {
+            setUtenteRichiesta(res.data.utente)
+          }
+        })
+        .catch(() => {
+          console.error('Errore nel recupero utente della richiesta')
+        })
+    }
+
     const socket = new SockJS('http://localhost:8080/ws-chat')
     const stomp = new Client({
       webSocketFactory: () => socket,
@@ -53,23 +66,18 @@ const ChatPage = () => {
           const isFromMe = (user.ruolo === 'ADMIN' && newMsg.mittente === 'ADMIN') ||
                            (user.ruolo !== 'ADMIN' && newMsg.mittente === 'USER')
 
-                           if (newMsg.richiestaId === parseInt(richiestaId)) {
-                            // Sei già nella chat → mostra direttamente il messaggio
-                            setMessages(prev => [...prev, newMsg]);
-                          
-                            // Se è un messaggio ricevuto, e sono nella chat → lo considero "letto"
-                            if (!isFromMe) {
-                              api.post(`/api/chat/${richiestaId}/letti`).catch(() => {});
-                              dispatch(removeRichiestaNotifica(parseInt(richiestaId)));
-                            }
-                          } else {
-                            // Se non sono in questa chat → attiva notifica
-                            if (!isFromMe) {
-                              dispatch(setNewMessage(true));
-                              dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }));
-                            }
-                          }
-                          
+          if (isCurrentChat) {
+            setMessages(prev => [...prev, newMsg])
+            if (!isFromMe) {
+              api.post(`/api/chat/${richiestaId}/letti`).catch(() => {})
+              dispatch(removeRichiestaNotifica(parseInt(richiestaId)))
+            }
+          } else {
+            if (!isFromMe) {
+              dispatch(setNewMessage(true))
+              dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }))
+            }
+          }
         })
       },
       onStompError: () => {
@@ -83,7 +91,7 @@ const ChatPage = () => {
     return () => {
       if (stomp.connected) stomp.deactivate()
     }
-  }, [richiestaId, user])
+  }, [richiestaId, user, dispatch])
 
   const sendMessage = () => {
     if (!text.trim()) return
@@ -114,8 +122,25 @@ const ChatPage = () => {
       <h3>Chat richiesta #{richiestaId}</h3>
       <div className="border p-3 mb-3" style={{ height: '400px', overflowY: 'scroll' }}>
         {messages.map((m, i) => (
-          <div key={i} className={`mb-2 ${m.mittente === (user.ruolo === 'ADMIN' ? 'ADMIN' : 'USER') ? 'text-end' : 'text-start'}`}>
-            <strong>{m.mittente}:</strong> <span>{m.messaggio}</span>
+          <div
+            key={i}
+            className={`mb-2 ${
+              m.mittente === (user.ruolo === 'ADMIN' ? 'ADMIN' : 'USER')
+                ? 'text-end'
+                : 'text-start'
+            }`}
+          >
+            <strong>
+              {m.mittente === 'ADMIN'
+                ? 'GratisEscape'
+                : user.ruolo === 'ADMIN'
+                  ? utenteRichiesta
+                    ? `${utenteRichiesta.nome} ${utenteRichiesta.cognome}`
+                    : 'Utente'
+                  : `${user.nome} ${user.cognome}`}
+              :
+            </strong>{' '}
+            <span>{m.messaggio}</span>
           </div>
         ))}
       </div>

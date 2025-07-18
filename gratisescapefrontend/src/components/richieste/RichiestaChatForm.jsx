@@ -1,15 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import SockJS from 'sockjs-client/dist/sockjs';
+import { Client } from '@stomp/stompjs';
 
 const RichiestaChatForm = () => {
   const [destinazione, setDestinazione] = useState('');
   const [descrizione, setDescrizione] = useState('');
   const navigate = useNavigate();
-
   const { user } = useSelector(state => state.auth);
+  const stompClient = useRef(null);
+
+  // Inizializza WebSocket all'avvio
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8080/ws-chat');
+    const client = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        stompClient.current = client;
+      },
+    });
+    client.activate();
+
+    return () => {
+      if (client.connected) client.deactivate();
+    };
+  }, []);
 
   const handleInvioRichiesta = async (e) => {
     e.preventDefault();
@@ -22,10 +40,23 @@ const RichiestaChatForm = () => {
     try {
       const res = await api.post('/richieste', {
         testoRichiesta: `Destinazione: ${destinazione}\n\n${descrizione}`
-        // emailUtente rimosso, lo gestisce backend
+        // emailUtente lo prende dal token JWT
       });
 
       const richiestaId = res.data.id;
+
+      // Invia notifica "fittizia" via WebSocket per attivare badge lato admin
+      if (stompClient.current && stompClient.current.connected) {
+        stompClient.current.publish({
+          destination: '/app/chat.sendMessage',
+          body: JSON.stringify({
+            richiestaId,
+            mittente: 'USER',
+            messaggio: 'Salve, avrei bisogno di informazioni'
+          }),
+        });
+      }
+
       toast.success("Richiesta inviata! Puoi iniziare la chat");
       navigate(`/chat/${richiestaId}`);
     } catch (error) {

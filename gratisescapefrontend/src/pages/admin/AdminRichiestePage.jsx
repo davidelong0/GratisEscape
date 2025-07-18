@@ -1,14 +1,21 @@
+// AdminRichiestePage.jsx
 import React, { useEffect, useState } from 'react';
-import api from '../../services/api';
-import { Card, Button } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Card, Button } from 'react-bootstrap';
 import { motion } from 'framer-motion';
+import api from '../../services/api';
+import {
+  setNewMessage,
+  removeRichiestaNotifica
+} from '../../redux/notificationSlice';
 
 const AdminRichiestePage = () => {
   const [richieste, setRichieste] = useState([]);
   const user = useSelector(state => state.auth.user);
+  const notifiche = useSelector(state => state.notification.perRichiesta);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -18,6 +25,13 @@ const AdminRichiestePage = () => {
       fetchRichieste();
     }
   }, [user]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchRichieste();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchRichieste = async () => {
     try {
@@ -49,6 +63,12 @@ const AdminRichiestePage = () => {
     }
   };
 
+  const handleChatClick = (id) => {
+    dispatch(setNewMessage(false));
+    dispatch(removeRichiestaNotifica(id));
+    navigate(`/chat/${id}`);
+  };
+
   return (
     <div className="container mt-5">
       <h2 className="mb-4">Richieste utenti</h2>
@@ -58,6 +78,8 @@ const AdminRichiestePage = () => {
         <div className="row">
           {richieste.map(r => {
             const requestId = r.id || r._id;
+            const hasNotifica = notifiche[requestId];
+
             return (
               <motion.div
                 key={requestId}
@@ -70,7 +92,17 @@ const AdminRichiestePage = () => {
                   <Card.Body className="py-2 px-2 d-flex flex-column justify-content-between">
                     <div>
                       <Card.Title className="mb-1" style={{ fontWeight: '600', fontSize: '0.85rem' }}>
-                        {r.oggetto || ''}
+                        {r.oggetto || 'Richiesta'}
+                        {hasNotifica && (
+                          <span style={{
+                            marginLeft: '6px',
+                            backgroundColor: 'red',
+                            borderRadius: '50%',
+                            width: '10px',
+                            height: '10px',
+                            display: 'inline-block'
+                          }} />
+                        )}
                       </Card.Title>
 
                       {(r.nome || r.cognome) && (
@@ -92,7 +124,7 @@ const AdminRichiestePage = () => {
                       <Button
                         variant="outline-primary"
                         size="sm"
-                        onClick={() => navigate(`/chat/${requestId}`)}
+                        onClick={() => handleChatClick(requestId)}
                       >
                         Chat
                       </Button>

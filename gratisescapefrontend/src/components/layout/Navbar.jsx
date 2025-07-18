@@ -5,9 +5,13 @@ import { logout } from '../../redux/actions/authActions';
 import { toast } from 'react-toastify';
 import { ArrowLeft } from 'react-bootstrap-icons';
 import { motion } from 'framer-motion';
+import { setNewMessage, setNotificaRichiesta } from '../../redux/notificationSlice';
+import SockJS from 'sockjs-client/dist/sockjs';
+import { Client } from '@stomp/stompjs';
 
 const Navbar = () => {
   const { user } = useSelector(state => state.auth);
+  const hasNewMessage = useSelector(state => state.notification.hasNewMessage);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,10 +23,51 @@ const Navbar = () => {
     setShowBackArrow(location.pathname !== '/');
   }, [location]);
 
+  // 🔴 WebSocket listener per nuove notifiche di messaggi in arrivo
+  useEffect(() => {
+    if (!user) return;
+
+    const socket = new SockJS('http://localhost:8080/ws-chat');
+    const stomp = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        stomp.subscribe('/topic/public', (msg) => {
+          const newMsg = JSON.parse(msg.body);
+
+          const isFromMe = (user.ruolo === 'ADMIN' && newMsg.mittente === 'ADMIN') ||
+                           (user.ruolo !== 'ADMIN' && newMsg.mittente === 'USER');
+
+          if (!isFromMe) {
+            dispatch(setNewMessage(true));
+            dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }));
+          }
+        });
+      },
+      onStompError: () => {
+        console.error('Errore WebSocket nella navbar');
+      }
+    });
+
+    stomp.activate();
+
+    return () => {
+      if (stomp.connected) stomp.deactivate();
+    };
+  }, [user, dispatch]);
+
   const handleLogout = () => {
     dispatch(logout());
     toast.info("Logout effettuato");
     navigate("/login");
+  };
+
+  const handleCampanellaClick = () => {
+    dispatch(setNewMessage(false));
+    if (isAdmin) {
+      navigate('/admin/richieste');
+    } else {
+      navigate('/profilo');
+    }
   };
 
   const linkVariants = {
@@ -69,7 +114,7 @@ const Navbar = () => {
             userSelect: "none",
             margin: "0 auto",
             textShadow: "1px 1px 2px #fdf6e3",
-            marginRight: '3rem'  // <-- aggiunto margine a destra per spazio
+            marginRight: '3rem'
           }}
         >
           GratisEscape
@@ -90,74 +135,29 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             {!isAdmin && user && (
-              <motion.li
-                className="nav-item"
-                initial="initial"
-                whileHover="hover"
-                variants={linkVariants}
-              >
-                <Link className="nav-link text-white" to="/viaggi">
-                  Viaggi
-                </Link>
-              </motion.li>
-            )}
-
-            {!isAdmin && user && (
               <>
-                <motion.li
-                  className="nav-item"
-                  initial="initial"
-                  whileHover="hover"
-                  variants={linkVariants}
-                >
-                  <Link className="nav-link text-white" to="/richiesta">
-                    Richiesta
-                  </Link>
+                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                  <Link className="nav-link text-white" to="/viaggi">Viaggi</Link>
                 </motion.li>
-                <motion.li
-                  className="nav-item"
-                  initial="initial"
-                  whileHover="hover"
-                  variants={linkVariants}
-                >
-                  <Link className="nav-link text-white" to="/preferiti">
-                    Preferiti
-                  </Link>
+                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                  <Link className="nav-link text-white" to="/richiesta">Richiesta</Link>
                 </motion.li>
-                <motion.li
-                  className="nav-item"
-                  initial="initial"
-                  whileHover="hover"
-                  variants={linkVariants}
-                >
-                  <Link className="nav-link text-white" to="/profilo">
-                    Profilo
-                  </Link>
+                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                  <Link className="nav-link text-white" to="/preferiti">Preferiti</Link>
+                </motion.li>
+                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                  <Link className="nav-link text-white" to="/profilo">Profilo</Link>
                 </motion.li>
               </>
             )}
 
             {isAdmin && (
               <>
-                <motion.li
-                  className="nav-item"
-                  initial="initial"
-                  whileHover="hover"
-                  variants={linkVariants}
-                >
-                  <Link className="nav-link text-white" to="/admin/viaggi">
-                    Gestione Viaggi
-                  </Link>
+                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                  <Link className="nav-link text-white" to="/admin/viaggi">Gestione Viaggi</Link>
                 </motion.li>
-                <motion.li
-                  className="nav-item"
-                  initial="initial"
-                  whileHover="hover"
-                  variants={linkVariants}
-                >
-                  <Link className="nav-link text-white" to="/admin/richieste">
-                    Gestione Richieste
-                  </Link>
+                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                  <Link className="nav-link text-white" to="/admin/richieste">Gestione Richieste</Link>
                 </motion.li>
               </>
             )}
@@ -165,6 +165,29 @@ const Navbar = () => {
 
           {user ? (
             <ul className="navbar-nav ms-auto align-items-center">
+              <motion.li
+                className="nav-item text-white me-3 position-relative"
+                initial="initial"
+                whileHover="hover"
+                variants={linkVariants}
+                style={{ fontWeight: '700', cursor: 'pointer' }}
+                onClick={handleCampanellaClick}
+              >
+                🔔
+                {hasNewMessage && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    backgroundColor: 'red',
+                    borderRadius: '50%',
+                    width: '10px',
+                    height: '10px',
+                    display: 'inline-block'
+                  }} />
+                )}
+              </motion.li>
+
               <motion.li
                 className="nav-item text-white me-3"
                 initial="initial"
@@ -174,33 +197,18 @@ const Navbar = () => {
               >
                 {isAdmin ? "Admin" : `${user.nome} ${user.cognome}`}
               </motion.li>
+
               <li className="nav-item">
-                <button className="btn btn-outline-gold" onClick={handleLogout}>
-                  Logout
-                </button>
+                <button className="btn btn-outline-gold" onClick={handleLogout}>Logout</button>
               </li>
             </ul>
           ) : (
             <ul className="navbar-nav ms-auto">
-              <motion.li
-                className="nav-item"
-                initial="initial"
-                whileHover="hover"
-                variants={linkVariants}
-              >
-                <Link className="nav-link text-white" to="/login">
-                  Login
-                </Link>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/login">Login</Link>
               </motion.li>
-              <motion.li
-                className="nav-item"
-                initial="initial"
-                whileHover="hover"
-                variants={linkVariants}
-              >
-                <Link className="nav-link text-white" to="/register">
-                  Registrati
-                </Link>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/register">Registrati</Link>
               </motion.li>
             </ul>
           )}

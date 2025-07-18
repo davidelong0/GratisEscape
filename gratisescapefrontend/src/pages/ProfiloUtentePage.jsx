@@ -1,14 +1,21 @@
+// ProfiloUtentePage.jsx
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import api from '../services/api';
 import { toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  setNewMessage,
+  removeRichiestaNotifica
+} from '../redux/notificationSlice';
 
 const ProfiloUtentePage = () => {
   const { user } = useSelector((state) => state.auth);
+  const notifiche = useSelector((state) => state.notification.perRichiesta);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [richieste, setRichieste] = useState([]);
 
   const fetchRichiesteUtente = async () => {
@@ -26,13 +33,18 @@ const ProfiloUtentePage = () => {
     else fetchRichiesteUtente();
   }, [user]);
 
-  // ✅ Aggiornamento periodico automatico (es. se l'admin cancella)
   useEffect(() => {
     const interval = setInterval(() => {
       fetchRichiesteUtente();
-    }, 5000); // ogni 5 secondi
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleApriChat = (id) => {
+    dispatch(setNewMessage(false));
+    dispatch(removeRichiestaNotifica(id));
+    navigate(`/chat/${id}`);
+  };
 
   return (
     <div className="container mt-5">
@@ -56,11 +68,23 @@ const ProfiloUtentePage = () => {
           >
             <Card>
               <Card.Body>
-                <Card.Title className="request-text">Richiesta</Card.Title>
+                <Card.Title className="request-text">
+                  Richiesta
+                  {notifiche[r.id] && (
+                    <span style={{
+                      marginLeft: '8px',
+                      backgroundColor: 'red',
+                      borderRadius: '50%',
+                      width: '10px',
+                      height: '10px',
+                      display: 'inline-block'
+                    }} />
+                  )}
+                </Card.Title>
                 <Card.Text>{r.testoRichiesta}</Card.Text>
-                <Link to={`/chat/${r.id}`} className="btn btn-request">
+                <button className="btn btn-request" onClick={() => handleApriChat(r.id)}>
                   Apri chat
-                </Link>
+                </button>
               </Card.Body>
             </Card>
           </motion.div>

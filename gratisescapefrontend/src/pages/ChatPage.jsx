@@ -1,15 +1,22 @@
+// ChatPage.jsx
 import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import SockJS from 'sockjs-client/dist/sockjs'
 import { Client } from '@stomp/stompjs'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
+import {
+  setNewMessage,
+  removeRichiestaNotifica,
+  setNotificaRichiesta
+} from '../redux/notificationSlice'
 
 const ChatPage = () => {
   const { richiestaId } = useParams()
   const navigate = useNavigate()
   const { user } = useSelector(state => state.auth)
+  const dispatch = useDispatch()
 
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
@@ -17,10 +24,15 @@ const ChatPage = () => {
   const stompClientRef = useRef(null)
 
   useEffect(() => {
-    if (!user || !user.email) return
+    if (!user || !user.email) {
+      setLoading(false)
+      return
+    }
 
-    // Recupero cronologia messaggi
-    api.get(`/api/chat/${richiestaId}`) // <-- Modifica qui
+    dispatch(setNewMessage(false))
+    dispatch(removeRichiestaNotifica(parseInt(richiestaId)))
+
+    api.get(`/api/chat/${richiestaId}`)
       .then(res => {
         setMessages(res.data)
         setLoading(false)
@@ -30,20 +42,37 @@ const ChatPage = () => {
         setLoading(false)
       })
 
-    // Connessione WebSocket
     const socket = new SockJS('http://localhost:8080/ws-chat')
     const stomp = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
         stomp.subscribe('/topic/public', (msg) => {
           const newMsg = JSON.parse(msg.body)
-          if (newMsg.richiestaId === parseInt(richiestaId)) {
-            setMessages(prev => [...prev, newMsg])
-          }
+
+          const isCurrentChat = newMsg.richiestaId === parseInt(richiestaId)
+          const isFromMe = (user.ruolo === 'ADMIN' && newMsg.mittente === 'ADMIN') ||
+                           (user.ruolo !== 'ADMIN' && newMsg.mittente === 'USER')
+
+                           if (newMsg.richiestaId === parseInt(richiestaId)) {
+                            // Sei già nella chat → mostra direttamente il messaggio
+                            setMessages(prev => [...prev, newMsg]);
+                          
+                            // Se è un messaggio ricevuto, e sono nella chat → lo considero "letto"
+                            if (!isFromMe) {
+                              api.post(`/api/chat/${richiestaId}/letti`).catch(() => {});
+                              dispatch(removeRichiestaNotifica(parseInt(richiestaId)));
+                            }
+                          } else {
+                            // Se non sono in questa chat → attiva notifica
+                            if (!isFromMe) {
+                              dispatch(setNewMessage(true));
+                              dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }));
+                            }
+                          }
+                          
         })
       },
-      onStompError: (frame) => {
-        console.error('Errore STOMP', frame)
+      onStompError: () => {
         toast.error('Errore WebSocket')
       }
     })
@@ -62,7 +91,7 @@ const ChatPage = () => {
     if (stompClientRef.current && stompClientRef.current.connected) {
       const msg = {
         richiestaId: parseInt(richiestaId),
-        mittente: user.email,
+        mittente: user.ruolo === 'ADMIN' ? 'ADMIN' : 'USER',
         messaggio: text
       }
 
@@ -73,7 +102,7 @@ const ChatPage = () => {
 
       setText('')
     } else {
-      toast.error("La connessione alla chat non è ancora stata stabilita. Attendi qualche istante.")
+      toast.error("Connessione non attiva. Attendi...")
     }
   }
 
@@ -85,7 +114,7 @@ const ChatPage = () => {
       <h3>Chat richiesta #{richiestaId}</h3>
       <div className="border p-3 mb-3" style={{ height: '400px', overflowY: 'scroll' }}>
         {messages.map((m, i) => (
-          <div key={i} className={`mb-2 ${m.mittente === user.email ? 'text-end' : 'text-start'}`}>
+          <div key={i} className={`mb-2 ${m.mittente === (user.ruolo === 'ADMIN' ? 'ADMIN' : 'USER') ? 'text-end' : 'text-start'}`}>
             <strong>{m.mittente}:</strong> <span>{m.messaggio}</span>
           </div>
         ))}

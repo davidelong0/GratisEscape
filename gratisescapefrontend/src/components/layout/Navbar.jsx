@@ -37,10 +37,14 @@ const Navbar = () => {
           const isFromMe = (user.ruolo === 'ADMIN' && newMsg.mittente === 'ADMIN') ||
                            (user.ruolo !== 'ADMIN' && newMsg.mittente === 'USER');
 
-          if (!isFromMe) {
-            dispatch(setNewMessage(true));
-            dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }));
-          }
+                           if (!isFromMe) {
+                            if ((user.ruolo === 'ADMIN' && newMsg.emailDestinatario === 'ADMIN') ||
+                                (user.ruolo !== 'ADMIN' && newMsg.emailDestinatario === user.email)) {
+                              dispatch(setNewMessage(true));
+                              dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }));
+                            }
+                          }
+                          
         });
       },
       onStompError: () => {

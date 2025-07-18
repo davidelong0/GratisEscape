@@ -1,7 +1,10 @@
 package com.example.gratisescape.controllers;
 
+import com.example.gratisescape.dto.RichiestaConUtenteDTO;
 import com.example.gratisescape.dto.RispostaDTO;
 import com.example.gratisescape.models.Richiesta;
+import com.example.gratisescape.models.User;
+import com.example.gratisescape.repositories.UserRepository;
 import com.example.gratisescape.services.RichiestaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,9 +17,11 @@ import java.util.List;
 public class RichiestaController {
 
     private final RichiestaService richiestaService;
+    private final UserRepository userRepo;
 
-    public RichiestaController(RichiestaService richiestaService) {
+    public RichiestaController(RichiestaService richiestaService, UserRepository userRepo) {
         this.richiestaService = richiestaService;
+        this.userRepo = userRepo;
     }
 
     @PostMapping
@@ -28,7 +33,6 @@ public class RichiestaController {
         Richiesta saved = richiestaService.creaRichiesta(richiesta);
         return ResponseEntity.ok(saved);
     }
-
 
     @GetMapping
     public ResponseEntity<List<Richiesta>> getTutte() {
@@ -66,7 +70,27 @@ public class RichiestaController {
         }
     }
 
+    // ✅ NUOVO: restituisce anche nome e cognome dell’utente associato alla richiesta
+    @GetMapping("/{id}/dettagli")
+    public ResponseEntity<RichiestaConUtenteDTO> getRichiestaConUtente(@PathVariable Long id) {
+        Richiesta richiesta = richiestaService.getById(id);
+
+        User utente = userRepo.findByEmail(richiesta.getEmailUtente())
+                .orElseThrow(() -> new RuntimeException("Utente non trovato per email: " + richiesta.getEmailUtente()));
+
+        RichiestaConUtenteDTO dto = new RichiestaConUtenteDTO();
+        dto.setId(richiesta.getId());
+        dto.setEmailUtente(richiesta.getEmailUtente());
+        dto.setTestoRichiesta(richiesta.getTestoRichiesta());
+        dto.setRisposta(richiesta.getRisposta());
+        dto.setRispostaInviata(richiesta.isRispostaInviata());
+        dto.setNomeUtente(utente.getNome());
+        dto.setCognomeUtente(utente.getCognome());
+
+        return ResponseEntity.ok(dto);
+    }
 }
+
 
 
 

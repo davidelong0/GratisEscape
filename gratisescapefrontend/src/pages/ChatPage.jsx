@@ -44,12 +44,16 @@ const ChatPage = () => {
 
     // Solo lato admin: recupera utente della richiesta
     if (user.ruolo === 'ADMIN') {
-      api.get(`/richieste/${richiestaId}`)
+      api.get(`/richieste/${richiestaId}/dettagli`)
         .then(res => {
-          if (res.data && res.data.utente) {
-            setUtenteRichiesta(res.data.utente)
+          if (res.data) {
+            setUtenteRichiesta({
+              nome: res.data.nomeUtente,
+              cognome: res.data.cognomeUtente
+            })
           }
         })
+    
         .catch(() => {
           console.error('Errore nel recupero utente della richiesta')
         })

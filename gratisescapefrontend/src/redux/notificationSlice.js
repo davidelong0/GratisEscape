@@ -22,6 +22,9 @@ const notificationSlice = createSlice({
     resetNotifiche: (state) => {
       state.perRichiesta = {};
     },
+    setNotifichePerRichieste: (state, action) => {
+      state.perRichiesta = action.payload;
+    },
   },
 });
 
@@ -30,6 +33,7 @@ export const {
   setNotificaRichiesta,
   removeRichiestaNotifica,
   resetNotifiche,
+  setNotifichePerRichieste,
 } = notificationSlice.actions;
 
 export default notificationSlice.reducer;

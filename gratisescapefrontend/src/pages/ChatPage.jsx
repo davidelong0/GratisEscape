@@ -32,6 +32,10 @@ const ChatPage = () => {
     dispatch(setNewMessage(false))
     dispatch(removeRichiestaNotifica(parseInt(richiestaId)))
 
+    // 🔴 Marca i messaggi della chat attuale come letti
+    api.put(`/api/chat/${richiestaId}/mark-read?mittente=${user.ruolo}`).catch(() => {})
+
+    // 🔴 Carica la chat
     api.get(`/api/chat/${richiestaId}`)
       .then(res => {
         setMessages(res.data)
@@ -42,7 +46,7 @@ const ChatPage = () => {
         setLoading(false)
       })
 
-    // Solo lato admin: recupera utente della richiesta
+    // Solo lato admin: recupera info utente
     if (user.ruolo === 'ADMIN') {
       api.get(`/richieste/${richiestaId}/dettagli`)
         .then(res => {
@@ -53,7 +57,6 @@ const ChatPage = () => {
             })
           }
         })
-    
         .catch(() => {
           console.error('Errore nel recupero utente della richiesta')
         })
@@ -73,7 +76,7 @@ const ChatPage = () => {
           if (isCurrentChat) {
             setMessages(prev => [...prev, newMsg])
             if (!isFromMe) {
-              api.post(`/api/chat/${richiestaId}/letti`).catch(() => {})
+              api.put(`/api/chat/${richiestaId}/mark-read?mittente=${user.ruolo}`).catch(() => {})
               dispatch(removeRichiestaNotifica(parseInt(richiestaId)))
             }
           } else {

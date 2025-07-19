@@ -5,9 +5,14 @@ import { logout } from '../../redux/actions/authActions';
 import { toast } from 'react-toastify';
 import { ArrowLeft } from 'react-bootstrap-icons';
 import { motion } from 'framer-motion';
-import { setNewMessage, setNotificaRichiesta } from '../../redux/notificationSlice';
+import {
+  setNewMessage,
+  setNotificaRichiesta,
+  setNotifichePerRichieste
+} from '../../redux/notificationSlice';
 import SockJS from 'sockjs-client/dist/sockjs';
 import { Client } from '@stomp/stompjs';
+import api from '../../services/api';
 
 const Navbar = () => {
   const { user } = useSelector(state => state.auth);
@@ -23,7 +28,28 @@ const Navbar = () => {
     setShowBackArrow(location.pathname !== '/');
   }, [location]);
 
-  // 🔴 WebSocket listener per nuove notifiche di messaggi in arrivo
+  useEffect(() => {
+    const checkUnread = async () => {
+      if (!user) return;
+      try {
+        const richieste = await api.get(user.ruolo === 'ADMIN' ? '/richieste' : '/richieste/mie');
+        const perRichiestaMap = {};
+        const promises = richieste.data.map(async (r) => {
+          const res = await api.get(`/api/chat/${r.id}/unread?mittente=${user.ruolo}`);
+          perRichiestaMap[r.id] = res.data.length > 0;
+          return res.data.length > 0;
+        });
+        const unreadFlags = await Promise.all(promises);
+        const anyUnread = unreadFlags.includes(true);
+        dispatch(setNewMessage(anyUnread));
+        dispatch(setNotifichePerRichieste(perRichiestaMap));
+      } catch (err) {
+        console.warn("Errore durante il recupero delle notifiche non lette");
+      }
+    };
+    checkUnread();
+  }, [user, dispatch]);
+
   useEffect(() => {
     if (!user) return;
 
@@ -33,18 +59,19 @@ const Navbar = () => {
       onConnect: () => {
         stomp.subscribe('/topic/public', (msg) => {
           const newMsg = JSON.parse(msg.body);
+          const isFromMe =
+            (user.ruolo === 'ADMIN' && newMsg.mittente === 'ADMIN') ||
+            (user.ruolo !== 'ADMIN' && newMsg.mittente === 'USER');
 
-          const isFromMe = (user.ruolo === 'ADMIN' && newMsg.mittente === 'ADMIN') ||
-                           (user.ruolo !== 'ADMIN' && newMsg.mittente === 'USER');
-
-                           if (!isFromMe) {
-                            if ((user.ruolo === 'ADMIN' && newMsg.emailDestinatario === 'ADMIN') ||
-                                (user.ruolo !== 'ADMIN' && newMsg.emailDestinatario === user.email)) {
-                              dispatch(setNewMessage(true));
-                              dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }));
-                            }
-                          }
-                          
+          if (!isFromMe) {
+            if (
+              (user.ruolo === 'ADMIN' && newMsg.emailDestinatario === 'ADMIN') ||
+              (user.ruolo !== 'ADMIN' && newMsg.emailDestinatario === user.email)
+            ) {
+              dispatch(setNewMessage(true));
+              dispatch(setNotificaRichiesta({ richiestaId: newMsg.richiestaId, value: true }));
+            }
+          }
         });
       },
       onStompError: () => {
@@ -65,8 +92,19 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const handleCampanellaClick = () => {
+  const handleCampanellaClick = async () => {
     dispatch(setNewMessage(false));
+    try {
+      const richieste = await api.get(user.ruolo === 'ADMIN' ? '/richieste' : '/richieste/mie');
+      await Promise.all(
+        richieste.data.map((r) =>
+          api.put(`/api/chat/${r.id}/mark-read?mittente=${user.ruolo}`)
+        )
+      );
+    } catch (err) {
+      console.warn("Errore nel marcare messaggi come letti");
+    }
+
     if (isAdmin) {
       navigate('/admin/richieste');
     } else {
@@ -80,8 +118,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav
-      className="navbar navbar-expand-lg navbar-light px-4"
+    <nav className="navbar navbar-expand-lg navbar-light px-4"
       style={{
         background: "linear-gradient(90deg,rgb(127, 118, 99) 0%, #efe9dd 100%)",
         boxShadow: "0 3px 6px rgba(118, 90, 41, 0.12)",
@@ -124,15 +161,7 @@ const Navbar = () => {
           GratisEscape
         </Link>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
           <span className="navbar-toggler-icon" />
         </button>
 
@@ -154,7 +183,6 @@ const Navbar = () => {
                 </motion.li>
               </>
             )}
-
             {isAdmin && (
               <>
                 <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>

@@ -27,6 +27,7 @@ public class ChatService {
                 .mittente(mittente)
                 .messaggio(messaggio)
                 .timestamp(LocalDateTime.now())
+                .lettoDalDestinatario(false)
                 .build();
         return chatRepo.save(chatMsg);
     }
@@ -34,6 +35,14 @@ public class ChatService {
     public List<MessaggioChat> getChatPerRichiesta(Long richiestaId) {
         Richiesta richiesta = richiestaRepo.findById(richiestaId).orElseThrow();
         return chatRepo.findByRichiestaOrderByTimestampAsc(richiesta);
+    }
+
+    public List<MessaggioChat> getMessaggiNonLetti(Long richiestaId, String mittente) {
+        return chatRepo.findUnreadMessages(richiestaId, mittente);
+    }
+
+    public void marcaComeLetti(Long richiestaId, String mittente) {
+        chatRepo.markAsRead(richiestaId, mittente);
     }
 }
 

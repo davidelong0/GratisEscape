@@ -25,6 +25,9 @@ public class MessaggioChat {
     private String messaggio;
 
     private LocalDateTime timestamp;
+
+    // 🔴 Nuova proprietà
+    private boolean lettoDalDestinatario = false;
 }
 
 

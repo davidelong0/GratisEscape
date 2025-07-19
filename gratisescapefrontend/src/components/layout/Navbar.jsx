@@ -95,26 +95,16 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const handleCampanellaClick = async () => {
-    dispatch(setNewMessage(false));
-    try {
-      const richieste = await api.get(user.ruolo === 'ADMIN' ? '/richieste' : '/richieste/mie');
-      await Promise.all(
-        richieste.data.map((r) =>
-          api.put(`/api/chat/${r.id}/mark-read?mittente=${user.ruolo}`)
-        )
-      );
-    } catch (err) {
-      console.warn("Errore nel marcare messaggi come letti");
-    }
-
+  const handleCampanellaClick = () => {
+    dispatch(setNewMessage(false)); // ✅ solo badge 🔔
+  
     if (isAdmin) {
       navigate('/admin/richieste');
     } else {
       navigate('/profilo');
     }
   };
-
+  
   const linkVariants = {
     initial: { opacity: 0.8 },
     hover: { opacity: 1, scale: 1.05, color: "#a67c52", transition: { duration: 0.3 } }

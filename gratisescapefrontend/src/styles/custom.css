@@ -104,6 +104,27 @@ body {
   padding-right: 2rem;
 }
 
+/* testopoetico */
+.poetic-text {
+  font-family: 'Georgia', serif;
+  font-weight: 600;
+  color: #a67c52;
+  text-align: center;
+  user-select: none;
+  letter-spacing: 0.07em;
+  margin-bottom: 2rem;
+
+  /* Le aggiunte fondamentali per il problema che hai: */
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
+  hyphens: auto;
+  font-size: clamp(0.55rem, 2.5vw, 0.8rem);
+}
+
+
+
 /* Brand GratisEscape centrato e animato */
 .navbar .navbar-brand {
   font-family: 'Georgia', serif;
@@ -290,7 +311,7 @@ body {
   height: auto;
 }
 
-/* Dettagli footer */
+/* Dettagli FOOTER */
 .footer-custom {
   background: linear-gradient(90deg, #f9f0f1 0%, #efe9dd 100%);
   color: #5a4b27;
@@ -354,3 +375,5 @@ body {
     height: 1.8rem;
   }
 }
+
+

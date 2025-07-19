@@ -15,18 +15,8 @@ const PoeticText = ({ text, delay = 100 }) => {
   }, [text, delay]);
 
   return (
-    <h2
-      style={{
-        fontFamily: "'Georgia', serif",
-        fontWeight: "600",
-        fontSize: "0.8rem",
-        color: "#a67c52",
-        textAlign: "center",
-        userSelect: "none",
-        letterSpacing: "0.07em",
-        marginBottom: "2rem",
-      }}
-    >
+<h2 className="poetic-text">
+
       {text.split("").map((char, i) => (
         <span
           key={i}

@@ -51,7 +51,6 @@ const Navbar = () => {
     };
     checkUnread();
   }, [user, dispatch]);
-  
 
   useEffect(() => {
     if (!user) return;
@@ -96,15 +95,14 @@ const Navbar = () => {
   };
 
   const handleCampanellaClick = () => {
-    dispatch(setNewMessage(false)); // ✅ solo badge 🔔
-  
+    dispatch(setNewMessage(false));
     if (isAdmin) {
       navigate('/admin/richieste');
     } else {
       navigate('/profilo');
     }
   };
-  
+
   const linkVariants = {
     initial: { opacity: 0.8 },
     hover: { opacity: 1, scale: 1.05, color: "#a67c52", transition: { duration: 0.3 } }
@@ -120,124 +118,140 @@ const Navbar = () => {
         alignItems: 'center',
       }}
     >
-      <div className="container-fluid">
-        {showBackArrow && (
-          <button
-            className="btn btn-outline-secondary me-2"
-            onClick={() => navigate(-1)}
-            aria-label="Torna indietro"
-            style={{ padding: '0.25rem 0.5rem', borderColor: '#5a4b27' }}
-          >
-            <ArrowLeft style={{ fontSize: '1rem', color: '#5a4b27' }} />
-          </button>
-        )}
+<div
+  className="container-fluid d-flex align-items-center justify-content-between flex-nowrap"
+  style={{ minWidth: 0 }}
+>
 
-        <Link
-          className="navbar-brand"
-          to="/"
-          style={{
-            fontFamily: "'Georgia', serif",
-            fontWeight: 900,
-            fontSize: '1.8rem',
-            background: "linear-gradient(270deg, #b0882f, #e3c26f, #a67c52, #f5e79e)",
-            backgroundSize: "600% 600%",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            color: "transparent",
-            animation: "goldGradientShift 8s ease infinite",
-            userSelect: "none",
-            margin: "0 auto",
-            textShadow: "1px 1px 2px #fdf6e3",
-            marginRight: '3rem'
-          }}
-        >
-          GratisEscape
-        </Link>
-
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-          <span className="navbar-toggler-icon" />
-        </button>
-
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            {!isAdmin && user && (
-              <>
-                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                  <Link className="nav-link text-white" to="/viaggi">Viaggi</Link>
-                </motion.li>
-                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                  <Link className="nav-link text-white" to="/richiesta">Richiesta</Link>
-                </motion.li>
-                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                  <Link className="nav-link text-white" to="/preferiti">Preferiti</Link>
-                </motion.li>
-                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                  <Link className="nav-link text-white" to="/profilo">Profilo</Link>
-                </motion.li>
-              </>
-            )}
-            {isAdmin && (
-              <>
-                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                  <Link className="nav-link text-white" to="/admin/viaggi">Gestione Viaggi</Link>
-                </motion.li>
-                <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                  <Link className="nav-link text-white" to="/admin/richieste">Gestione Richieste</Link>
-                </motion.li>
-              </>
-            )}
-          </ul>
-
-          {user ? (
-            <ul className="navbar-nav ms-auto align-items-center">
-              <motion.li
-                className="nav-item text-white me-3 position-relative"
-                initial="initial"
-                whileHover="hover"
-                variants={linkVariants}
-                style={{ fontWeight: '700', cursor: 'pointer' }}
-                onClick={handleCampanellaClick}
-              >
-                🔔
-                {hasNewMessage && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-4px',
-                    backgroundColor: 'red',
-                    borderRadius: '50%',
-                    width: '10px',
-                    height: '10px',
-                    display: 'inline-block'
-                  }} />
-                )}
-              </motion.li>
-
-              <motion.li
-                className="nav-item text-white me-3"
-                initial="initial"
-                whileHover="hover"
-                variants={linkVariants}
-                style={{ fontWeight: '700' }}
-              >
-                {isAdmin ? "Admin" : `${user.nome} ${user.cognome}`}
-              </motion.li>
-
-              <li className="nav-item">
-                <button className="btn btn-outline-gold" onClick={handleLogout}>Logout</button>
-              </li>
-            </ul>
-          ) : (
-            <ul className="navbar-nav ms-auto">
-              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                <Link className="nav-link text-white" to="/login">Login</Link>
-              </motion.li>
-              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
-                <Link className="nav-link text-white" to="/register">Registrati</Link>
-              </motion.li>
-            </ul>
+        <div className="d-flex align-items-center">
+          {showBackArrow && (
+            <button
+              className="btn btn-outline-secondary me-2"
+              onClick={() => navigate(-1)}
+              aria-label="Torna indietro"
+              style={{ padding: '0.25rem 0.5rem', borderColor: '#5a4b27' }}
+            >
+              <ArrowLeft style={{ fontSize: '1rem', color: '#5a4b27' }} />
+            </button>
           )}
+
+<Link
+  className="navbar-brand"
+  to="/"
+  style={{
+    fontFamily: "'Georgia', serif",
+    fontWeight: 900,
+    fontSize: '1.8rem',
+    background: "linear-gradient(270deg, #b0882f, #e3c26f, #a67c52, #f5e79e)",
+    backgroundSize: "600% 600%",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    color: "transparent",
+    animation: "goldGradientShift 8s ease infinite",
+    userSelect: "none",
+    textShadow: "1px 1px 2px #fdf6e3",
+    margin: "0 auto",
+    flex: '1 1 auto',
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden'
+  }}
+>
+  GratisEscape
+</Link>
+
         </div>
+
+        <div className="d-flex align-items-center">
+          {user && (
+            <motion.div
+              className="position-relative me-3 ms-3"
+              initial="initial"
+              whileHover="hover"
+              variants={linkVariants}
+              style={{ fontWeight: '700', cursor: 'pointer', fontSize: '1.2rem' }}
+              onClick={handleCampanellaClick}
+            >
+              🔔
+              {hasNewMessage && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  right: '-4px',
+                  backgroundColor: 'red',
+                  borderRadius: '50%',
+                  width: '10px',
+                  height: '10px',
+                  display: 'inline-block'
+                }} />
+              )}
+            </motion.div>
+          )}
+
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+            <span className="navbar-toggler-icon" />
+          </button>
+        </div>
+      </div>
+
+      <div className="collapse navbar-collapse mt-2 mt-lg-0" id="navbarSupportedContent">
+       <ul className="navbar-nav me-auto mb-2 mb-lg-0 nav-links-sinistra">
+
+          {!isAdmin && user && (
+            <>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/viaggi">Viaggi</Link>
+              </motion.li>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/richiesta">Richiesta</Link>
+              </motion.li>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/preferiti">Preferiti</Link>
+              </motion.li>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/profilo">Profilo</Link>
+              </motion.li>
+            </>
+          )}
+          {isAdmin && (
+            <>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/admin/viaggi">Gestione Viaggi</Link>
+              </motion.li>
+              <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+                <Link className="nav-link text-white" to="/admin/richieste">Gestione Richieste</Link>
+              </motion.li>
+            </>
+          )}
+        </ul>
+
+        {user ? (
+          <ul className="navbar-nav ms-auto align-items-center">
+            <motion.li
+              className="nav-item text-white me-3 ms-3"
+
+              initial="initial"
+              whileHover="hover"
+              variants={linkVariants}
+              style={{ fontWeight: '700' }}
+            >
+              {isAdmin ? "Admin" : `${user.nome} ${user.cognome}`}
+            </motion.li>
+
+            <li className="nav-item">
+              <button className="btn btn-outline-gold" onClick={handleLogout}>Logout</button>
+            </li>
+          </ul>
+        ) : (
+          <ul className="navbar-nav ms-auto">
+            <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+              <Link className="nav-link text-white" to="/login">Login</Link>
+            </motion.li>
+            <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+              <Link className="nav-link text-white" to="/register">Registrati</Link>
+            </motion.li>
+          </ul>
+        )}
       </div>
     </nav>
   );

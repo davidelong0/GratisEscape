@@ -290,6 +290,33 @@ body {
   height: auto;
 }
 
+/* Dettagli footer */
+.footer-custom {
+  background: linear-gradient(90deg, #f9f0f1 0%, #efe9dd 100%);
+  color: #5a4b27;
+  font-family: 'Georgia', serif;
+  font-weight: 600;
+  border-top: 1px solid #d9d1bc;
+  box-shadow: 0 -2px 6px rgba(166, 124, 82, 0.2);
+}
+
+.footer-custom p {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+}
+
+.footer-email {
+  color: #a67c52;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.footer-email:hover {
+  color: #7a5c16;
+  text-decoration: none;
+}
+
+
 /* Dettagli (descrizione) con ellissi */
 .homepage-container .card-text {
   font-size: 0.75rem;

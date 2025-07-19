@@ -25,9 +25,10 @@ const AdminRichiestePage = () => {
       for (let r of richiesteList) {
         const res = await api.get(`/api/chat/${r.id}/unread?mittente=ADMIN`);
         const isUnread = res.data.length > 0;
+        const isNuova = r.vistaDaAdmin === false; // ✅ nuova logica
 
         // Applica sempre lo stato più aggiornato, senza sovrascrivere le richieste già lette
-        perRichiestaMap[r.id] = perRichiestaMap[r.id] || isUnread;
+        perRichiestaMap[r.id] = perRichiestaMap[r.id] || isUnread || isNuova;
 
         if (perRichiestaMap[r.id]) anyUnread = true;
       }

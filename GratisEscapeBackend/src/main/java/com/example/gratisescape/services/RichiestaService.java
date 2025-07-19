@@ -30,6 +30,7 @@ public class RichiestaService {
     public Richiesta creaRichiesta(Richiesta richiesta) {
         richiesta.setRispostaInviata(false);
         richiesta.setRisposta(null);
+        richiesta.setVistaDaAdmin(false);
         return richiestaRepo.save(richiesta);
     }
 

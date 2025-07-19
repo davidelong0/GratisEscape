@@ -36,8 +36,10 @@ const Navbar = () => {
         const perRichiestaMap = {};
         const promises = richieste.data.map(async (r) => {
           const res = await api.get(`/api/chat/${r.id}/unread?mittente=${user.ruolo}`);
-          perRichiestaMap[r.id] = res.data.length > 0;
-          return res.data.length > 0;
+          const isUnread = res.data.length > 0;
+          const isNuova = user.ruolo === 'ADMIN' && r.vistaDaAdmin === false;
+          perRichiestaMap[r.id] = isUnread || isNuova;
+          return isUnread || isNuova;
         });
         const unreadFlags = await Promise.all(promises);
         const anyUnread = unreadFlags.includes(true);
@@ -49,6 +51,7 @@ const Navbar = () => {
     };
     checkUnread();
   }, [user, dispatch]);
+  
 
   useEffect(() => {
     if (!user) return;

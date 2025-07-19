@@ -21,6 +21,11 @@ public class Richiesta {
     private boolean rispostaInviata;
 
     private String risposta;
+
+    // ✅ Campo nuovo per sapere se l’admin ha visualizzato la richiesta
+    @Builder.Default
+    private boolean vistaDaAdmin = false;
 }
+
 
 

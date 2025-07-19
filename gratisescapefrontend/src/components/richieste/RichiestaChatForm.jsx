@@ -52,9 +52,11 @@ const RichiestaChatForm = () => {
           body: JSON.stringify({
             richiestaId,
             mittente: 'USER',
-            messaggio: 'Salve, avrei bisogno di informazioni'
+            messaggio: 'Salve, avrei bisogno di informazioni',
+            emailDestinatario: 'ADMIN'
           }),
         });
+        
       }
 
       toast.success("Richiesta inviata! Puoi iniziare la chat");

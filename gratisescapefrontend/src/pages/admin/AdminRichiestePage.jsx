@@ -1,4 +1,3 @@
-// AdminRichiestePage.jsx
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +6,8 @@ import { motion } from 'framer-motion';
 import api from '../../services/api';
 import {
   setNewMessage,
-  removeRichiestaNotifica
+  removeRichiestaNotifica,
+  setNotifichePerRichieste
 } from '../../redux/notificationSlice';
 
 const AdminRichiestePage = () => {
@@ -17,21 +17,57 @@ const AdminRichiestePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token || user?.ruolo !== 'ADMIN') {
-      navigate('/');
-    } else {
-      fetchRichieste();
-    }
-  }, [user]);
+  const checkUnreadMessages = async (richiesteList) => {
+    try {
+      const perRichiestaMap = { ...notifiche }; // preserva stato attuale
+      let anyUnread = false;
 
+      for (let r of richiesteList) {
+        const res = await api.get(`/api/chat/${r.id}/unread?mittente=ADMIN`);
+        const isUnread = res.data.length > 0;
+
+        // Applica sempre lo stato più aggiornato, senza sovrascrivere le richieste già lette
+        perRichiestaMap[r.id] = perRichiestaMap[r.id] || isUnread;
+
+        if (perRichiestaMap[r.id]) anyUnread = true;
+      }
+
+      dispatch(setNewMessage(anyUnread));
+      dispatch(setNotifichePerRichieste(perRichiestaMap));
+    } catch (err) {
+      console.warn("Errore durante il recupero delle notifiche non lette", err);
+    }
+  };
+
+  // 🔁 Al primo caricamento: fetch richieste + notifiche
+  useEffect(() => {
+    const init = async () => {
+      const token = localStorage.getItem("token");
+      if (!token || user?.ruolo !== 'ADMIN') {
+        navigate('/');
+        return;
+      }
+
+      try {
+        const res = await api.get('/richieste');
+        const richiesteData = res.data;
+        setRichieste(richiesteData);
+        await checkUnreadMessages(richiesteData);
+      } catch (err) {
+        console.error('Errore iniziale nel caricamento delle richieste o notifiche', err);
+      }
+    };
+
+    init();
+  }, [user?.email]);
+
+  // 🔁 Polling ogni 5s (senza ricalcolo notifiche)
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchRichieste();
+      if (user?.ruolo === 'ADMIN') fetchRichieste();
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
   const fetchRichieste = async () => {
     try {
@@ -43,10 +79,7 @@ const AdminRichiestePage = () => {
   };
 
   const eliminaRichiesta = async (id) => {
-    if (!id) {
-      alert("Errore: ID richiesta non valido");
-      return;
-    }
+    if (!id) return alert("Errore: ID richiesta non valido");
     if (window.confirm('Sei sicuro di voler eliminare questa richiesta?')) {
       try {
         await api.delete(`/richieste/${id}`);
@@ -55,16 +88,15 @@ const AdminRichiestePage = () => {
       } catch (err) {
         console.error('Errore eliminazione richiesta:', err);
         if (err.response) {
-          alert(`Errore eliminazione richiesta: ${err.response.status} - ${err.response.data}`);
+          alert(`Errore: ${err.response.status} - ${err.response.data}`);
         } else {
-          alert('Errore eliminazione richiesta: errore di rete o server');
+          alert('Errore di rete o server');
         }
       }
     }
   };
 
   const handleChatClick = (id) => {
-    dispatch(setNewMessage(false));
     dispatch(removeRichiestaNotifica(id));
     navigate(`/chat/${id}`);
   };

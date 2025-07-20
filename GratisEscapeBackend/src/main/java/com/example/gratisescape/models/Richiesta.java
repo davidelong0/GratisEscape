@@ -3,6 +3,8 @@ package com.example.gratisescape.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -25,6 +27,10 @@ public class Richiesta {
     // ✅ Campo nuovo per sapere se l’admin ha visualizzato la richiesta
     @Builder.Default
     private boolean vistaDaAdmin = false;
+
+    @Column(updatable = false)
+    private LocalDateTime dataCreazione;
+
 }
 
 

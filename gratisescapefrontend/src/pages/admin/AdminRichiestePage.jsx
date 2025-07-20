@@ -124,19 +124,20 @@ const AdminRichiestePage = () => {
                 <Card className="h-100 shadow-sm" style={{ fontSize: '0.75rem' }}>
                   <Card.Body className="py-2 px-2 d-flex flex-column justify-content-between">
                     <div>
-                      <Card.Title className="mb-1" style={{ fontWeight: '600', fontSize: '0.85rem' }}>
-                        {r.oggetto || 'Richiesta'}
-                        {hasNotifica && (
-                          <span style={{
-                            marginLeft: '6px',
-                            backgroundColor: 'red',
-                            borderRadius: '50%',
-                            width: '10px',
-                            height: '10px',
-                            display: 'inline-block'
-                          }} />
-                        )}
-                      </Card.Title>
+                    <Card.Title className="mb-1" style={{ fontWeight: '600', fontSize: '0.85rem' }}>
+  Richiesta ({new Date(r.dataCreazione).toLocaleDateString()})
+  {hasNotifica && (
+    <span style={{
+      marginLeft: '6px',
+      backgroundColor: 'red',
+      borderRadius: '50%',
+      width: '10px',
+      height: '10px',
+      display: 'inline-block'
+    }} />
+  )}
+</Card.Title>
+
 
                       {(r.nome || r.cognome) && (
                         <Card.Subtitle className="mb-1" style={{ fontSize: '0.75rem', fontWeight: '500' }}>

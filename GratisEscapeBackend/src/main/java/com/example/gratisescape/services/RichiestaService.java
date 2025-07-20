@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,8 +32,10 @@ public class RichiestaService {
         richiesta.setRispostaInviata(false);
         richiesta.setRisposta(null);
         richiesta.setVistaDaAdmin(false);
+        richiesta.setDataCreazione(LocalDateTime.now()); // <-- aggiunto
         return richiestaRepo.save(richiesta);
     }
+
 
     public List<Richiesta> getTutte() {
         return richiestaRepo.findAll();

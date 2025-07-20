@@ -107,19 +107,20 @@ const ProfiloUtentePage = () => {
           >
             <Card>
               <Card.Body>
-                <Card.Title className="request-text">
-                  Richiesta
-                  {notifiche[r.id] && (
-                    <span style={{
-                      marginLeft: '8px',
-                      backgroundColor: 'red',
-                      borderRadius: '50%',
-                      width: '10px',
-                      height: '10px',
-                      display: 'inline-block'
-                    }} />
-                  )}
-                </Card.Title>
+              <Card.Title className="request-text">
+  Richiesta ({new Date(r.dataCreazione).toLocaleDateString()})
+  {notifiche[r.id] && (
+    <span style={{
+      marginLeft: '8px',
+      backgroundColor: 'red',
+      borderRadius: '50%',
+      width: '10px',
+      height: '10px',
+      display: 'inline-block'
+    }} />
+  )}
+</Card.Title>
+
                 <Card.Text>{r.testoRichiesta}</Card.Text>
                 <button className="btn btn-request" onClick={() => handleApriChat(r.id)}>
                   Apri chat

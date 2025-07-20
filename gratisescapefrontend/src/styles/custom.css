@@ -299,6 +299,13 @@ body {
   padding: 0.2rem 0.5rem;
 }
 
+/* chatform */
+.form-wrapper {
+  max-width: 600px;
+  width: 100%;
+}
+
+
 /* Titoli e testi più piccoli */
 .homepage-container .card-title {
   font-size: 0.9rem;

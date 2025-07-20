@@ -68,9 +68,10 @@ const RichiestaChatForm = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h4>Richiesta tramite chat</h4>
-      <form onSubmit={handleInvioRichiesta}>
+<div className="container mt-5 d-flex justify-content-center">
+  <div className="form-wrapper p-4 shadow rounded bg-white">
+    <h4 className="mb-4 text-center">Richiesta tramite chat</h4>
+    <form onSubmit={handleInvioRichiesta}>
         <div className="mb-3">
           <label className="form-label">Destinazione desiderata</label>
           <input
@@ -95,6 +96,7 @@ const RichiestaChatForm = () => {
           Invia richiesta e apri chat
         </button>
       </form>
+    </div>
     </div>
   );
 };

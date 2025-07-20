@@ -233,6 +233,32 @@ body {
   padding: 1rem;
 }
 
+.richiesta-card-wrapper {
+  max-width: 520px;
+}
+
+/* Bottone coerente ma più compatto */
+.btn-modify {
+  color: #5a4b27;
+  background-color: transparent;
+  border: 2px solid #5a4b27;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.8rem;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.btn-modify:hover,
+.btn-modify:focus {
+  background-color: #5a4b27;
+  color: #fff;
+  border-color: #4b3f20;
+  box-shadow: 0 0 6px #4b3f20;
+}
+
+
+
 /* Pulsanti nel body con margine */
 .card-body .btn {
   margin-top: 1rem;

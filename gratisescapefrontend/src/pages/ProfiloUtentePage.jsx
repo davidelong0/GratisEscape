@@ -20,16 +20,13 @@ const ProfiloUtentePage = () => {
 
   const checkUnreadMessages = async (richiesteList) => {
     try {
-      const perRichiestaMap = { ...notifiche }; // preserva stato attuale
+      const perRichiestaMap = { ...notifiche };
       let anyUnread = false;
 
       for (let r of richiesteList) {
         const unreadRes = await api.get(`/api/chat/${r.id}/unread?mittente=USER`);
         const isUnread = unreadRes.data.length > 0;
-
-        // Applica sempre lo stato più aggiornato, senza sovrascrivere le richieste già lette
         perRichiestaMap[r.id] = perRichiestaMap[r.id] || isUnread;
-
         if (perRichiestaMap[r.id]) anyUnread = true;
       }
 
@@ -40,7 +37,6 @@ const ProfiloUtentePage = () => {
     }
   };
 
-  // 🔁 Primo load: richieste + notifiche
   useEffect(() => {
     const init = async () => {
       if (!user) {
@@ -62,7 +58,6 @@ const ProfiloUtentePage = () => {
     init();
   }, [user?.email]);
 
-  // 🔁 Polling ogni 5s solo per aggiornare richieste
   useEffect(() => {
     const interval = setInterval(() => {
       if (user) fetchRichiesteUtente();
@@ -87,48 +82,53 @@ const ProfiloUtentePage = () => {
 
   return (
     <div className="container mt-5">
-      <h2 className="text-gold mb-4">Profilo Utente</h2>
-      <p><strong>Nome:</strong> {user?.nome}</p>
-      <p><strong>Email:</strong> {user?.email}</p>
+      <h2 className="text-gold mb-4 text-center">Profilo Utente</h2>
+      <p className="text-center"><strong>Nome:</strong> {user?.nome}</p>
+      <p className="text-center"><strong>Email:</strong> {user?.email}</p>
 
       <hr className="my-4" />
 
-      <h4 className="text-gold mb-3">Le mie richieste personalizzate</h4>
+      <h4 className="text-gold mb-4 text-center">Le mie richieste personalizzate</h4>
       {richieste.length === 0 ? (
-        <p>Nessuna richiesta inviata.</p>
+        <p className="text-center">Nessuna richiesta inviata.</p>
       ) : (
-        richieste.map((r) => (
-          <motion.div
-            key={r.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mb-3"
-          >
-            <Card>
-              <Card.Body>
-              <Card.Title className="request-text">
-  Richiesta ({new Date(r.dataCreazione).toLocaleDateString()})
-  {notifiche[r.id] && (
-    <span style={{
-      marginLeft: '8px',
-      backgroundColor: 'red',
-      borderRadius: '50%',
-      width: '10px',
-      height: '10px',
-      display: 'inline-block'
-    }} />
-  )}
-</Card.Title>
-
-                <Card.Text>{r.testoRichiesta}</Card.Text>
-                <button className="btn btn-request" onClick={() => handleApriChat(r.id)}>
-                  Apri chat
-                </button>
-              </Card.Body>
-            </Card>
-          </motion.div>
-        ))
+        <div className="d-flex flex-column align-items-center gap-3">
+          {richieste.map((r) => (
+            <motion.div
+              key={r.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="richiesta-card-wrapper w-100 px-3"
+            >
+              <Card className="shadow-sm">
+                <Card.Body className="py-3 px-4 text-center">
+                  <Card.Title className="request-text d-flex align-items-center justify-content-center gap-2 mb-3" style={{ fontSize: '1rem' }}>
+                    Richiesta ({new Date(r.dataCreazione).toLocaleDateString()})
+                    {notifiche[r.id] && (
+                      <span style={{
+                        backgroundColor: 'red',
+                        borderRadius: '50%',
+                        width: '10px',
+                        height: '10px',
+                        display: 'inline-block'
+                      }} />
+                    )}
+                  </Card.Title>
+                  <Card.Text className="text-muted mb-3" style={{ fontSize: '0.9rem', lineHeight: '1.4' }}>
+                    {r.testoRichiesta}
+                  </Card.Text>
+                  <button
+                    className="btn btn-modify btn-sm mx-auto d-block"
+                    onClick={() => handleApriChat(r.id)}
+                  >
+                    Apri chat
+                  </button>
+                </Card.Body>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       )}
     </div>
   );

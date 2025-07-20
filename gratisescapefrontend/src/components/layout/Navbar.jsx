@@ -194,7 +194,7 @@ const Navbar = () => {
       </div>
 
       <div className="collapse navbar-collapse mt-2 mt-lg-0" id="navbarSupportedContent">
-       <ul className="navbar-nav me-auto mb-2 mb-lg-0 nav-links-sinistra">
+      <ul className="navbar-nav me-auto mb-2 mb-lg-0 nav-links-sinistra d-flex align-items-center">
        <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
     <Link className="nav-link text-white" to="/clienti">Social</Link>
   </motion.li>

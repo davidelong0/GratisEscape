@@ -126,7 +126,15 @@ const ChatPage = () => {
 
   return (
     <div className="container mt-5">
-      <h3>Chat richiesta #{richiestaId}</h3>
+      <h3>
+  Chat con{' '}
+  {user.ruolo === 'ADMIN'
+    ? utenteRichiesta
+      ? `${utenteRichiesta.nome} ${utenteRichiesta.cognome}`
+      : 'Utente'
+    : 'GratisEscape'}
+</h3>
+
       <div className="border p-3 mb-3" style={{ height: '400px', overflowY: 'scroll' }}>
         {messages.map((m, i) => (
           <div

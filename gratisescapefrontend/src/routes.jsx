@@ -17,6 +17,7 @@ import AdminRichiestePage from './pages/admin/AdminRichiestePage'
 import ChangePasswordFirst from './components/auth/ChangePasswordFirst'
 import FavouritesPage from './pages/FavouritesPage'
 import ProfiloUtentePage from './pages/ProfiloUtentePage'
+import ClientiPage from './pages/ClientiPage'
 import ConfermaEmailPage from './pages/ConfermaEmailPage';
 
 const routes = [
@@ -34,6 +35,7 @@ const routes = [
   { path: '/viaggi', component: ViaggiPage },
   { path: '/change-password-first', component: ChangePasswordFirst },
   { path: '/viaggi/:id', component: DettaglioViaggioPage },
+  { path: '/clienti', component: ClientiPage },
   { path: '/richiesta', component: () => <PrivateRoute><RichiestaPage /></PrivateRoute> },
   { path: '/chat/:richiestaId', component: () => <PrivateRoute><ChatPage /></PrivateRoute> },
   { path: '/admin/viaggi', component: () => <PrivateRoute roles={['ADMIN']}><AdminViaggiPage /></PrivateRoute> },

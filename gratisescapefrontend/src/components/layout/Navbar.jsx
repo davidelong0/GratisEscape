@@ -159,7 +159,6 @@ const Navbar = () => {
 >
   GratisEscape
 </Link>
-
         </div>
 
         <div className="d-flex align-items-center">
@@ -196,7 +195,9 @@ const Navbar = () => {
 
       <div className="collapse navbar-collapse mt-2 mt-lg-0" id="navbarSupportedContent">
        <ul className="navbar-nav me-auto mb-2 mb-lg-0 nav-links-sinistra">
-
+       <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>
+    <Link className="nav-link text-white" to="/clienti">Social</Link>
+  </motion.li>
           {!isAdmin && user && (
             <>
               <motion.li className="nav-item" initial="initial" whileHover="hover" variants={linkVariants}>

@@ -16,7 +16,7 @@ public class EmailSenderService {
     }
 
     public void sendConfirmationEmail(String toEmail, String frontendUrl, String token) throws MessagingException {
-        String link = frontendUrl + "/conferma-email?token=" + token; // ✅ URL corretto per frontend
+        String link = frontendUrl + "/conferma-email?token=" + token;
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);

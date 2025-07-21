@@ -24,7 +24,7 @@ public class OAuth2Controller {
 
     @GetMapping("/oauth2/success")
     public void oauth2Success(Authentication authentication, HttpServletResponse response) throws IOException {
-        // Otteniamo l'email dell'utente autenticato da Google
+
         String email = authentication.getName();
 
         User user = userRepo.findByEmail(email).orElse(null);
@@ -33,10 +33,10 @@ public class OAuth2Controller {
             return;
         }
 
-        // Generiamo un JWT per il frontend
+
         String token = jwtService.generateToken(user);
 
-        // Redirect verso il frontend con token come query param
+
         response.sendRedirect("http://localhost:5173/oauth-success?token=" + token);
     }
 }

@@ -43,7 +43,7 @@ public class ChatService {
 
     public void marcaComeLetti(Long richiestaId, String mittente) {
         chatRepo.markAsRead(richiestaId, mittente);
-        // ✅ Marca la richiesta come vista se l'admin la apre
+
         if ("ADMIN".equalsIgnoreCase(mittente)) {
             richiestaRepo.findById(richiestaId).ifPresent(richiesta -> {
                 richiesta.setVistaDaAdmin(true);

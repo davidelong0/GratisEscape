@@ -81,7 +81,7 @@ const ProfiloUtentePage = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 pb-5">
       <h2 className="text-gold mb-4 text-center">Profilo Utente</h2>
       <p className="text-center"><strong>Nome:</strong> {user?.nome}</p>
       <p className="text-center"><strong>Email:</strong> {user?.email}</p>

@@ -31,7 +31,7 @@ public class User {
     private Ruolo ruolo;
 
     @Column(nullable = false)
-    private boolean isEnabled; // ⚠️ Nessun valore predefinito. Viene gestito dal codice.
+    private boolean isEnabled;
 
     private boolean passwordChanged = false;
 }

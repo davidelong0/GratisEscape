@@ -4,5 +4,5 @@ public record ChatMessage(
         Long richiestaId,
         String mittente,
         String messaggio,
-        String emailDestinatario // ✅ nuovo campo
+        String emailDestinatario
 ) {}

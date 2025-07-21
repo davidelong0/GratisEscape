@@ -19,7 +19,7 @@ const RichiestaEmailForm = () => {
     try {
       await api.post('/richieste', {
         testoRichiesta: `Destinazione: ${destinazione}\n\n${descrizione}`
-        // emailUtente rimosso, lo gestisce backend
+        
       });
 
       toast.success("Richiesta inviata con successo!");

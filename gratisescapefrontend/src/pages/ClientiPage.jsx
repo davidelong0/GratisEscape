@@ -32,7 +32,7 @@ const ClientiPage = () => {
 </div>
 
 
-      {/* Sezione video */}
+      
       <div className="text-center mb-4">
         <div
           style={{
@@ -64,7 +64,7 @@ const ClientiPage = () => {
         </p>
       </div>
 
-      {/* Sezione immagini */}
+      
       <div className="row mb-5">
         {['parigi.png', 'giappone.png', 'thailandia.png'].map((img, i) => (
           <div key={i} className="col-md-4 mb-3 text-center">
@@ -78,7 +78,7 @@ const ClientiPage = () => {
         ))}
       </div>
 
-      {/* Sezione recensioni */}
+      
       <h4 className="text-center mb-4">Recensioni dei nostri viaggiatori</h4>
       <div className="row">
         {recensioni.map((r, idx) => (
@@ -89,14 +89,14 @@ const ClientiPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Stelle valutazione */}
+              
               <div className="mb-2">
                 {[...Array(r.rating)].map((_, i) => (
                   <StarFill key={i} color="#f5c518" className="me-1" />
                 ))}
               </div>
 
-              {/* Testo recensione */}
+              
               <p className="mb-2" style={{ fontStyle: 'italic' }}>“{r.testo}”</p>
               <p className="mb-0 text-end">- {r.nome}</p>
             </motion.div>
@@ -104,7 +104,7 @@ const ClientiPage = () => {
         ))}
       </div>
 
-      {/* Social link */}
+      
       <div className="text-center mt-5">
         <h5>Seguici sui nostri social</h5>
         <div

@@ -73,18 +73,18 @@ public class RichiestaService {
         return richiestaRepo.findByEmailUtente(emailUtente);
     }
 
-    // Metodo aggiornato: elimina prima i messaggi, poi la richiesta
+
     @Transactional
     public void deleteRichiestaConMessaggi(Long id) {
-        // Verifica esistenza richiesta
+
         if (!richiestaRepo.existsById(id)) {
             throw new RuntimeException("Richiesta non trovata");
         }
 
-        // Elimina i messaggi collegati
+
         messaggioChatRepo.deleteByRichiestaId(id);
 
-        // Elimina la richiesta
+
         richiestaRepo.deleteById(id);
     }
 }

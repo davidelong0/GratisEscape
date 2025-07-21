@@ -32,10 +32,10 @@ const ChatPage = () => {
     dispatch(setNewMessage(false))
     dispatch(removeRichiestaNotifica(parseInt(richiestaId)))
 
-    // 🔴 Marca i messaggi della chat attuale come letti
+    
     api.put(`/api/chat/${richiestaId}/mark-read?mittente=${user.ruolo}`).catch(() => {})
 
-    // 🔴 Carica la chat
+    
     api.get(`/api/chat/${richiestaId}`)
       .then(res => {
         setMessages(res.data)
@@ -46,7 +46,7 @@ const ChatPage = () => {
         setLoading(false)
       })
 
-    // Solo lato admin: recupera info utente
+    
     if (user.ruolo === 'ADMIN') {
       api.get(`/richieste/${richiestaId}/dettagli`)
         .then(res => {

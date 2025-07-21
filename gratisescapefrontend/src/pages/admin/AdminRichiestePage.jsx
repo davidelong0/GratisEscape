@@ -40,7 +40,7 @@ const AdminRichiestePage = () => {
     }
   };
 
-  // 🔁 Al primo caricamento: fetch richieste + notifiche
+  
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem("token");
@@ -62,7 +62,7 @@ const AdminRichiestePage = () => {
     init();
   }, [user?.email]);
 
-  // 🔁 Polling ogni 5s (senza ricalcolo notifiche)
+  
   useEffect(() => {
     const interval = setInterval(() => {
       if (user?.ruolo === 'ADMIN') fetchRichieste();

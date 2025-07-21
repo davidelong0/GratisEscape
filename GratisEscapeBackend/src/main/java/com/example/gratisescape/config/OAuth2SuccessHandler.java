@@ -47,7 +47,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             nuovo.setEnabled(true);
             nuovo.setPasswordChanged(true);
             PasswordEncoder encoder = new BCryptPasswordEncoder();
-            nuovo.setPassword(encoder.encode(UUID.randomUUID().toString())); // password fittizia
+            nuovo.setPassword(encoder.encode(UUID.randomUUID().toString()));
             return userRepository.save(nuovo);
         });
 

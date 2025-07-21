@@ -19,14 +19,14 @@ public class MessaggioChat {
     @ManyToOne
     private Richiesta richiesta;
 
-    private String mittente; // "USER" o "ADMIN"
+    private String mittente;
 
     @Column(columnDefinition = "TEXT")
     private String messaggio;
 
     private LocalDateTime timestamp;
 
-    // 🔴 Nuova proprietà
+
     private boolean lettoDalDestinatario = false;
 }
 

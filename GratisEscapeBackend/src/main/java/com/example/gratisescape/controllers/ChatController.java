@@ -31,7 +31,7 @@ public class ChatController {
         return ResponseEntity.ok(chat);
     }
 
-    // 🔴 Nuova rotta per recuperare messaggi non letti
+
     @GetMapping("/{richiestaId}/unread")
     public ResponseEntity<List<MessaggioChat>> getNonLetti(@PathVariable Long richiestaId,
                                                            @RequestParam String mittente) {
@@ -39,7 +39,7 @@ public class ChatController {
         return ResponseEntity.ok(nonLetti);
     }
 
-    // 🔴 Nuova rotta per marcare i messaggi come letti
+
     @PutMapping("/{richiestaId}/mark-read")
     public ResponseEntity<Void> marcaComeLetti(@PathVariable Long richiestaId,
                                                @RequestParam String mittente) {

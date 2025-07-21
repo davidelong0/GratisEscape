@@ -28,10 +28,10 @@ public class ChatWebSocketController {
 
         Richiesta richiesta = saved.getRichiesta();
 
-        // ✅ Determina il destinatario in base al mittente
+
         String destinatario = message.mittente().equals("ADMIN")
-                ? richiesta.getEmailUtente()        // Se l'admin scrive, notifica l'utente
-                : "ADMIN";                          // Se l'utente scrive, notifica l'admin
+                ? richiesta.getEmailUtente()
+                : "ADMIN";
 
         return new ChatMessage(
                 message.richiestaId(),

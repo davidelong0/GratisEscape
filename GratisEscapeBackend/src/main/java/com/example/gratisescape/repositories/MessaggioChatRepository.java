@@ -18,7 +18,7 @@ public interface MessaggioChatRepository extends JpaRepository<MessaggioChat, Lo
     @Query("DELETE FROM MessaggioChat m WHERE m.richiesta.id = :richiestaId")
     void deleteByRichiestaId(Long richiestaId);
 
-    // 🔴 Nuovo metodo
+
     @Query("SELECT m FROM MessaggioChat m WHERE m.richiesta.id = :richiestaId AND m.mittente <> :mittente AND m.lettoDalDestinatario = false")
     List<MessaggioChat> findUnreadMessages(Long richiestaId, String mittente);
 

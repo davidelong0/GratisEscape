@@ -26,7 +26,7 @@ public class RichiestaController {
 
     @PostMapping
     public ResponseEntity<Richiesta> creaRichiesta(@RequestBody Richiesta richiesta, Authentication authentication) {
-        // Imposta l'email dell'utente autenticato direttamente da Spring Security
+
         String emailUtente = authentication.getName();
         richiesta.setEmailUtente(emailUtente);
 
@@ -59,7 +59,7 @@ public class RichiestaController {
         return ResponseEntity.ok(richiesteUtente);
     }
 
-    // NUOVO: metodo per eliminare richiesta (solo ADMIN)
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteRichiesta(@PathVariable Long id) {
         try {
@@ -70,7 +70,7 @@ public class RichiestaController {
         }
     }
 
-    // ✅ NUOVO: restituisce anche nome e cognome dell’utente associato alla richiesta
+
     @GetMapping("/{id}/dettagli")
     public ResponseEntity<RichiestaConUtenteDTO> getRichiestaConUtente(@PathVariable Long id) {
         Richiesta richiesta = richiestaService.getById(id);

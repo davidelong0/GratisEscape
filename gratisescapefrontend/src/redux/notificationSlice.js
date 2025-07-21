@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   hasNewMessage: false,
-  perRichiesta: {}, // richiestaId → true/false
+  perRichiesta: {},
 };
 
 const notificationSlice = createSlice({

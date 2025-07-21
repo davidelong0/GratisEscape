@@ -32,7 +32,7 @@ const Register = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5" style={{ maxWidth: '400px' }}>
       <h2>Registrati</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" name="nome" value={form.nome} onChange={handleChange} placeholder="Nome" className="form-control mb-2" />

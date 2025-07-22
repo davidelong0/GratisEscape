@@ -1,4 +1,4 @@
-// DataInitializer.java
+
 package com.example.gratisescape.config;
 
 import com.example.gratisescape.models.Ruolo;
